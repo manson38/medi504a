@@ -1,0 +1,250 @@
+---
+title: "Working with Tables"
+date: "2022-10-26"
+output:
+  html_document:
+    highlight: tango
+    number_sections: yes
+    theme: readable
+    toc: yes
+    toc_float: yes
+---
+
+# Goals for today:
+
+1. Practice Making Publication Quality Tables with `flextable` library
+2. Create a theme for your `ggplot` visualizations
+3. Creating Animations/Interactive Plots
+4. If time permits, explore some html features
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(DT)
+library(flextable)
+library(ggplot2)
+library(gganimate)
+library(gapminder)
+library(plotly)
+library(cowplot)
+library(transformr)
+```
+
+# Making Nice Tables
+
+
+## Task 1:  
+
+Take `diamonds` dataset, select columns `cut`, `color`, `price`, and `depth`. Filter the data so that dataset only have diamonds with cut quality Fair and Good. Then, group dataset by `cut` and `color` and produce a summary the mean and standard deviation for depth and price. Assign name `data_color` to your final output.
+
+```{r}
+data_color <- diamonds %>% 
+  select(cut, color, price, depth) %>% 
+  filter(cut %in% c("Fair", "Good")) %>% 
+  group_by(cut, color) %>% 
+  summarise(mean_depth = mean(depth), sd_depth = sd(depth), mean_price = mean(price), sd_price = sd(price), .groups = "keep")
+
+#.groups = "keep" ensures the groups specified above, remain
+# can althernatively use the NEW pipe |>
+
+print(data_color)
+```
+
+
+## Viewing Data
+
+
+More info about `DT` library can be found here: https://rstudio.github.io/DT/
+```{r}
+datatable(data_color)
+
+#datatable package, DT, creates an interactive html type of table. You can filter by search!
+
+```
+
+## Producing Publication Quality Tables
+
+The user manual is available here: https://ardata-fr.github.io/flextable-book/ with list of all available functions: https://davidgohel.github.io/flextable/reference/index.html
+
+```{r}
+#flextable() produces formattable tables. Default format is the ___? (displayed below)
+tbl<-  data_color |>  flextable() |>
+  #we can use colformat and digits specification to limit decimal points
+  colformat_double(digits = 1) %>% 
+  #linespacing function enables us to change the spacing between obesrvations in the table
+  line_spacing(space = 0.5) %>% 
+  #set_caption allows us to add a title
+  set_caption("Summary Statistics") |>
+  #the flextable merge function is useful for collapsing repetitive things into 1. note  j = columns, i = rows
+  merge_v(j=c("cut")) %>% 
+  #valign lets us move the merged labels around. part = body refers to only the body of the table is where we want to align. valign = top means we want stuff to be at the top
+  valign(j=1, valign = "top", part = "body") %>% 
+  #below, using align_nottext_col to align to center of titles in each column.
+  align_nottext_col(align = "center") %>% 
+  # j means columns. We're bolding the first and second columns in the body only
+  bold(j=c(1:2), bold = TRUE, part = "body") %>% 
+  #with only the above calls, we have a problem with the line on the bottom. We can use a theme to fix this
+  theme_booktabs() %>% 
+  #autofit (below), ensures anything we produce after will always fit in the boundaries of the page
+  autofit()
+
+tbl
+
+#the below command opens the tibble in microsoft word as a figure
+#print(tbl, "docx")
+# save as docx will let you save the table
+#save_as_docx()
+```
+
+```{r}
+typology <- data.frame(
+  col_keys = colnames(data_color),
+  #c("cut", "color", "price_mean", "price_sd", "depth_mean", "depth_sd"
+  names = c("Cut","Color","Depth","Depth","Price","Price"),    # this is the top header
+  metric = c("Cut","Color", "mean", 'sd', "mean", 'sd'),    # this is the second header
+  stringsAsFactors = FALSE)
+
+tbl |> 
+  set_header_df(mapping = typology, key = "col_keys" ) %>% 
+  theme_booktabs() %>% 
+  align(align = "center", part = "all") %>% 
+  merge_h(part = "header") %>% 
+  merge_v(part = "header") %>% 
+  fix_border_issues(part = "all") %>% 
+  vline(j=c(4))
+
+```
+
+
+
+STOPPED HERE IN CLASS
+
+
+
+# Publication Quality Theme
+
+The function created by Koundinya Desiraju https://rpubs.com/Koundy/71792
+
+```{r}
+# library(extrafont)
+# loadfonts(quiet = TRUE)
+# fonts()
+theme_Publication <- function(base_size=14, base_family="Times New Roman") {
+      library(grid)
+      library(ggthemes)
+    (theme_foundation(base_size=base_size, base_family=base_family)
+    + theme(plot.title = element_text(face = "bold",
+                                      size = rel(1.2), hjust = 0.5),
+            text = element_text(),
+               panel.background = element_rect(colour = NA),
+               plot.background = element_rect(colour = NA),
+               panel.border = element_rect(colour = NA),
+               axis.title = element_text(face = "bold",size = rel(1)),
+               axis.title.y = element_text(angle=90,vjust =2),
+               axis.title.x = element_text(vjust = -0.2),
+               axis.text = element_text(),
+               axis.line = element_line(colour="black"),
+               axis.ticks = element_line(),
+               panel.grid.major = element_line(colour="#f0f0f0"),
+               panel.grid.minor = element_blank(),
+               legend.key = element_rect(colour = NA),
+               legend.position = "right",
+               legend.direction = "vertical",
+               legend.key.size= unit(0.2, "cm"),
+               legend.spacing = unit(0, "cm"),
+               legend.title = element_text(face="italic"),
+               plot.margin=unit(c(10,5,5,5),"mm"),
+               strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+               strip.text = element_text(face="bold")
+          ))
+
+}
+
+scale_fill_Publication <- function(...){
+      library(scales)
+      discrete_scale("fill","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+
+}
+
+scale_colour_Publication <- function(...){
+      library(scales)
+      discrete_scale("colour","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+
+}
+```
+
+```{r warning=FALSE}
+ggplot(mtcars, aes(mpg, disp, color = factor(carb))) +
+  geom_point(size = 3) + labs(title = "Scatter Plot", color="carb")
+```
+
+```{r warning=FALSE}
+ggplot(mtcars, aes(factor(carb),fill=factor(carb))) + 
+  geom_bar(alpha=0.9) + 
+  labs(title="Bar Plot", color="carb")
+
+```
+
+```{r warning=FALSE}
+ggplot(data = iris,aes(Sepal.Length, Petal.Length,color=Species))+
+  geom_point(size=3) + 
+  facet_wrap(~ Species,scales="free")+
+  labs(title="Plot With Facets")
+```
+
+
+## Task 2:
+
+Using `gapminder` dataset,  produce a geom_point() plot for `gdpPercap` and `lifeExp`. Colour the points by `country`, make size of the points be proportional to the population.  Make it look publishable.
+
+```{r}
+gap.plt<-
+
+gap.plt
+```
+
+## Making Plots Interactive
+
+```{r}
+ggplotly(gap.plt, tooltip = c("country","x","y","pop"))
+```
+
+## Animations
+
+Animations or GIFs (Graphics Interchange Format) can be generated using the `gganimate` package written by Thomas Lin Pedersen and David Robinson. The `gganimate` package allows to track changes over time while simultaneously displaying several variables in one visualization. 
+
+```{r}
+gif <- gap.plt + transition_time(year) +
+  labs(title = "Year: {frame_time}")
+# show gif
+gif
+```
+
+```{r warning=FALSE}
+fig <- gapminder %>%
+  plot_ly(
+    x = ~gdpPercap, 
+    y = ~lifeExp, 
+    size = ~pop, 
+    color = ~continent, 
+    frame = ~year, 
+    text = ~country, 
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers'
+  )
+fig <- fig %>% layout(
+    xaxis = list(
+      type = "log"
+    )
+  )
+
+fig
+```
+
+
+
+
+
+
+
+
