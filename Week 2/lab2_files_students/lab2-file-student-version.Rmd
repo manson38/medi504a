@@ -123,13 +123,13 @@ p1_3_1 <- diab1 %>%
   labs(x = "BMI", y = "2-Hour serum insulin (µU/mL)") +
   theme_classic()    
 
-(p1_3_2 <- diab1 %>% 
+p1_3_2 <- diab1 %>% 
   ggplot(aes(x = decade, y = Pregnancies, fill = Outcome)) + 
   geom_boxplot() +
   facet_grid(. ~ Outcome) +
   scale_fill_manual(values = c("#4287f5","#f2d563")) +
   labs(x = "Age (decade)", y = "Pregnancies") +
-  theme_classic())
+  theme_classic()
   
 #plot_grid(p1_3_1, p1_3_2)
   
