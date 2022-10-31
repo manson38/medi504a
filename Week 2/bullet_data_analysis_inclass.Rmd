@@ -1,0 +1,104 @@
+---
+title: "Bullet_Data_Analysis"
+author: "Matt"
+date: "2022-10-31"
+output: html_document
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(comment = "")
+
+library(rstatix)
+library(tidyverse)
+library(scales)
+library(summarytools)
+update_geom_defaults("point", list(size = 2)) # 2 for full width, 2.5 for half width
+```
+
+
+Loading the data: 
+
+```{r}
+df <- read_csv("https://github.com/firasm/bits/raw/master/bullet_data.csv")
+
+head(df)
+```
+
+Getting summary statistics using two different methods:
+
+```{r}
+#method 1
+psych::describe(df)
+
+#method 2
+df %>% get_summary_stats(type="full", show=c("n", "mean","median","sd","min", "q1", "q3", "max"))
+```
+
+Another method to get data summaries:
+
+```{r}
+stview(dfSummary(df),  plain.ascii=FALSE)
+```
+
+
+
+converting zones to factor type:
+
+```{r}
+df$zone=as.factor(df$zone)
+```
+
+
+
+removing non-hit observations:
+
+```{r}
+hits_df<- df %>% filter(bullet==1) 
+
+head(hits_df)
+```
+
+
+counting the number of hits in each zone
+
+```{r}
+summary <- hits_df %>% group_by(zone) %>% count() 
+
+summary
+```
+
+```{r}
+hits_plot <- hits_df %>% 
+  ggplot() +   
+  geom_histogram(aes(y=zone), stat="count", fill="steelblue") +   
+  labs(x="Bullet hits", y="", title = "Bullet hit count by Airplane Zone") +  
+  scale_y_discrete(limits=rev,drop=FALSE,expand = c(0,0)) + 
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 5)) +
+  theme_classic()
+
+hits_plot
+```
+
+This is very helpful, but not quite done yet. Tihis is still summary data, we can guess that the two areas may need to be reinforced are B and E, but lets go a bit further...
+
+```{r}
+outline <- df %>% filter(zone=="OutsidePlane") %>% ggplot()+   geom_point(aes(y,-x, color="OutsidePlane"))+   labs(color="bullet")+   theme_void()
+
+outline
+```
+
+```{r}
+outline + 
+  geom_point(data=hits_df, aes(y,-x,color=zone),alpha=0.8, inherit.aes = FALSE)
+```
+
+
+Interestingly, there are areas that have no bullet holes ---- these areas may atually be the fatal areas (remember we're working with the planes that DID COME BACK) - we dont know that these areas are fatal for sure, but we can now investigate this and understand. 
+
+
+
+
+
+
+
