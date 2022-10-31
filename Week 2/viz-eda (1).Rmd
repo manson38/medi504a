@@ -22,6 +22,7 @@ library(scales)
 library(summarytools)
 update_geom_defaults("point", list(size = 2)) # 2 for full width, 2.5 for half width
 ```
+
 ---
 ## Review of EDA
 
@@ -60,7 +61,9 @@ They gave you a csv file with this information called `bullet_data.csv`.
 df <- read_csv("https://github.com/firasm/bits/raw/master/bullet_data.csv",show_col_types=FALSE)
   
 head(df)
+
 ```
+
 ---
 ### Summary Statistics
 Let's see if we can get some summary statistics about this dataset, such as the mean, median, standard deviation, minimum, and quartiles.
@@ -68,6 +71,7 @@ Let's see if we can get some summary statistics about this dataset, such as the 
 ```{r}
 # psych::describe(df)
 df %>% get_summary_stats(type="full", show=c("n", "mean","median","sd","min","q1", "q3","max"))
+
 ```
 --
 Hmm - this doesn't seem to be that useful.
@@ -77,9 +81,11 @@ Hmm - this doesn't seem to be that useful.
 ```{r results='asis'}
 stview(dfSummary(df),  plain.ascii=FALSE)
 ```
+
 --
 `describe()` didn't quite organize the data like the way we wanted, and 
 `dfSummary` is just overkill..
+
 ---
 ### Getting our hands dirty
 
@@ -102,6 +108,7 @@ Let's wrangle the data a bit to try and see what's going on:
 # Lets convert zones of the plane to a a factor before starting the analysis
 df$zone=as.factor(df$zone)
 ```
+
 (ugh, factors.)
 
 ```{r}
@@ -109,6 +116,7 @@ df$zone=as.factor(df$zone)
 hits_df<- df %>% filter(bullet==1)
 head(hits_df)
 ```
+
 ---
 #### Group by Zones
 
@@ -118,6 +126,7 @@ Let's group the data by zones and see if that gives us any insight
 summary <- hits_df %>% group_by(zone) %>% count()
 summary
 ```
+
 
 ---
 #### Visualize the grouped data
@@ -141,6 +150,7 @@ Can we answer the research question?
 
 > "Your task is to look at the bullet data for the planes and help determine which areas of the plane should be reinforced."
 
+
 ---
 ### EDA is an ongoing, iterative process
 
@@ -152,7 +162,9 @@ outline <- df %>% filter(zone=="OutsidePlane") %>% ggplot()+
   labs(color="bullet")+
   theme_void()
 ```
+
 --
+
 ```{r fig.height=4, fig.width=6}
 outline
 ```
@@ -164,7 +176,12 @@ Yes! This is great! One more step...
 
 Let's plot the bullet holes on top of the plane outline and see if we can see any trends.
 ```{r fig.height=6, fig.width=10}
-outline + geom_point(data=hits_df, aes(y,-x,color=zone),alpha=0.8, inherit.aes = FALSE)
+
+outline + geom_point(data = hits_df, aes(y,-x,color=zone), alpha = 0.8, inherit.aes = FALSE)
+
 ```
 ---
+
 ## Debrief
+
+
