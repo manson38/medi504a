@@ -175,11 +175,14 @@ Yes! This is great! One more step...
 #### The final image
 
 Let's plot the bullet holes on top of the plane outline and see if we can see any trends.
+
 ```{r fig.height=6, fig.width=10}
 
-outline + geom_point(data = hits_df, aes(y,-x,color=zone), alpha = 0.8, inherit.aes = FALSE)
+outline + geom_point(data = hits_df, aes(y, -x, colour = zone), alpha = 0.8, inherit.aes = FALSE)
 
 ```
+
+
 ---
 
 ## Debrief
