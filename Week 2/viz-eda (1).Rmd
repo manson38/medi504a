@@ -1,0 +1,170 @@
+---
+title: "Importance of EDA"
+author: "Firas Moosvi and Yulia Egorova"
+date: "2021-11-01"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      ratio: '16:9'
+      highlightStyle: github
+      highlightLines: true
+      titleSlideClass: [center, middle]
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(comment = "")
+
+library(rstatix)
+library(tidyverse)
+library(scales)
+library(summarytools)
+update_geom_defaults("point", list(size = 2)) # 2 for full width, 2.5 for half width
+```
+---
+## Review of EDA
+
+Exploratory Data Analysis is an essential component of Data Science.
+
+<img src="EDA_RforDS.png" width="45%">
+
+**Source: [R for Data Science](https://r4ds.had.co.nz/exploratory-data-analysis.html)**
+
+---
+
+## Case Study: Planes in WW2
+
+You have been given a dataset and tasked with trying to solve a problem. In WW2, expensive fighter planes were going down quite frequently due to bullet fire. The military decided to conduct an analysis and surveyed all the surviving planes in an effort to catalog which regions of the plane should be reinforced. 
+--
+
+With limited resources, the military could only reinforce a maximum of two zones.
+Your task is to look at the bullet data for the planes and help determine which areas of the plane should be reinforced.
+
+--
+
+You're given a schematic of the plane, and told that the workers added a grid to the schematic, divided it up into regions A,B,C,D,E and recorded a value of 1 wherever there was a bullet hole across all the planes that returned.
+Areas without bullet holes are marked as 0. 
+
+--
+
+They gave you a csv file with this information called `bullet_data.csv`.
+(Yes, these WW2 workers are very sophisticated and had access to a computer :-). )
+
+---
+### The Data
+
+`bullet_data.csv` is available here: https://github.com/firasm/bits/raw/master/bullet_data.csv
+
+```{r message=FALSE, warning=FALSE}
+df <- read_csv("https://github.com/firasm/bits/raw/master/bullet_data.csv",show_col_types=FALSE)
+  
+head(df)
+```
+---
+### Summary Statistics
+Let's see if we can get some summary statistics about this dataset, such as the mean, median, standard deviation, minimum, and quartiles.
+
+```{r}
+# psych::describe(df)
+df %>% get_summary_stats(type="full", show=c("n", "mean","median","sd","min","q1", "q3","max"))
+```
+--
+Hmm - this doesn't seem to be that useful.
+---
+### Another (automated) data summary tool
+
+```{r results='asis'}
+stview(dfSummary(df),  plain.ascii=FALSE)
+```
+--
+`describe()` didn't quite organize the data like the way we wanted, and 
+`dfSummary` is just overkill..
+---
+### Getting our hands dirty
+
+Let's try and figure out some more info manually.
+```{r}
+message("The zones are: ", toString(sort(unique(df$zone))),"\n")
+
+message("Columns are: ", toString(colnames(df)) ,"\n")
+
+message("Values for 'bullet' column are ", toString(unique(df$bullet)),"\n")
+```
+--
+Now we're getting somewhere!
+
+---
+### Data Wrangling
+
+Let's wrangle the data a bit to try and see what's going on:
+```{r}
+# Lets convert zones of the plane to a a factor before starting the analysis
+df$zone=as.factor(df$zone)
+```
+(ugh, factors.)
+
+```{r}
+# First, only consider the bullet 'hits':
+hits_df<- df %>% filter(bullet==1)
+head(hits_df)
+```
+---
+#### Group by Zones
+
+Let's group the data by zones and see if that gives us any insight
+```{r}
+# Then, let's group by the "zone" and look at the resulting dataframe
+summary <- hits_df %>% group_by(zone) %>% count()
+summary
+```
+
+---
+#### Visualize the grouped data
+```{r warning=FALSE}
+# Now let's visualize the table above:
+hits_plot <-hits_df %>% ggplot()+
+  geom_histogram(aes(y=zone), stat="count", fill="steelblue")+
+  labs(x="Bullet hits", y="", title = "Bullet hit count by Airplane Zone")+
+  scale_y_discrete(limits=rev,drop=FALSE,expand = c(0,0))+
+  scale_x_continuous(  breaks = scales::pretty_breaks(n = 5))+
+  theme_classic()
+```
+--
+```{r fig.height=3, fig.width=4}
+hits_plot
+```
+--
+This is all very helpful! Are we done? 
+
+Can we answer the research question? 
+
+> "Your task is to look at the bullet data for the planes and help determine which areas of the plane should be reinforced."
+
+---
+### EDA is an ongoing, iterative process
+
+Can we visualize the bullet holes on the plane?
+
+```{r fig.height=4, fig.width=6}
+outline <- df %>% filter(zone=="OutsidePlane") %>% ggplot()+
+  geom_point(aes(y,-x, color="OutsidePlane"))+
+  labs(color="bullet")+
+  theme_void()
+```
+--
+```{r fig.height=4, fig.width=6}
+outline
+```
+
+Yes! This is great! One more step...
+
+---
+#### The final image
+
+Let's plot the bullet holes on top of the plane outline and see if we can see any trends.
+```{r fig.height=6, fig.width=10}
+outline + geom_point(data=hits_df, aes(y,-x,color=zone),alpha=0.8, inherit.aes = FALSE)
+```
+---
+## Debrief
