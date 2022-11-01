@@ -53,7 +53,7 @@ diab1 <- diab %>%
   mutate(Outcome = factor(case_when(Outcome == 1 ~ "Diabetes-Positive",
                                     TRUE ~ "Diabetes-Negative"),
                                     levels = c('Diabetes-Negative', 'Diabetes-Positive'))) %>% 
-  mutate(decade = factor(case_when(Age < 20 ~ "10",
+  mutate(age_decade = factor(case_when(Age < 20 ~ "10",
                                    Age < 30 ~ "20",
                                    Age < 40 ~ "30",
                                    Age < 50 ~ "40",
@@ -100,7 +100,7 @@ diab1 %>%
 ```{r answer1.2}
 # Plot
 diab1 %>% 
-  ggplot(aes(x = Pregnancies, y = decade)) +
+  ggplot(aes(x = Pregnancies, y = age_decade)) +
   geom_density_ridges2(fill = "#1a5eb8", alpha = 0.4) +
   labs(y = "Age (decades)", x = "Number of pregnancies") +
   theme_classic()
@@ -112,8 +112,8 @@ diab1 %>%
 
 ![Exrcise 1.3](figures/composite-plt.png)
 ```{r answer 1.3,  fig.height=7, fig.width=10}
-
 # Plot 
+
 p1_3_1 <- diab1 %>%  
   ggplot(aes(x = BMI, y = Insulin, color = Outcome)) + 
   geom_point(show.legend = FALSE) + 
@@ -125,7 +125,7 @@ p1_3_1 <- diab1 %>%
   theme(strip.background = element_rect(fill="grey", colour = NA), text = element_text(size = 20))  
 
 p1_3_2 <- diab1 %>% 
-  ggplot(aes(x = decade, y = Pregnancies, fill = Outcome)) + 
+  ggplot(aes(x = age_decade, y = Pregnancies, fill = Outcome)) + 
   geom_boxplot(show.legend = FALSE) +
   facet_wrap(. ~ Outcome) +
   scale_fill_manual(values = c("#4287f5","#f2d563")) +
@@ -151,8 +151,8 @@ Just as a reminder, refer to the principles of effective visualizations when com
 Let's look at this plot:
 ```{r fig.height=6, fig.width=10}
 # Plot
-ggplot(diab %>%  filter(Age<50), 
-       mapping = aes(x = BloodPressure, y = Pregnancies, col =age_decade)) + 
+ggplot(diab1 %>%  filter(Age<50), 
+       mapping = aes(x = BloodPressure, y = Pregnancies, col = age_decade)) + 
   geom_point(size = 5) + 
   facet_grid(Outcome ~ age_decade, switch = "y") +
   theme(
