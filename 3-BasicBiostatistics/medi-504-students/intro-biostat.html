@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 3: Introduction to biostatistics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="@Gabriela Cohen Freue (based on material from TiffanyTimbers, UBC)" />
+    <meta name="author" content="2022-11-01" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: top, left, title-slide
+
+.title[
+# Lecture 3: Introduction to biostatistics
+]
+.subtitle[
+## MEDI 504
+]
+.author[
+### <span class="citation">@Gabriela</span> Cohen Freue (based on material from TiffanyTimbers, UBC)
+]
+.author[
+### 2022-11-01
+]
+
+---
+
+
+
+
+
+
+## Module learning objectives
+
+By the end of this module, students should be able to:
+
+- Identify the different types of data analysis questions and categorize a question into the correct type
+
+- Identify a suitable analysis type to answer an inferential question, given the data set at hand
+
+- Use the R programming language to carry out analysis to answer inferential question
+
+- Interpret and communicate the results of the analysis from an inferential question
+
+---
+
+## What is the question?
+
+&lt;div class="figure"&gt;
+&lt;img src="img/what_is_the_question.png" alt="What is the question? by Roger Peng and Jeff Leek" width="50%" /&gt;
+&lt;p class="caption"&gt;What is the question? by Roger Peng and Jeff Leek&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+#### 1. Descriptive
+
+One that seeks to summarize a characteristic of a set of data. No interpretation of the result itself as the result is a fact, an attribute of the data set you are working with.
+
+--
+
+Examples:
+
+- What is the frequency of viral illnesses in a set of data collected from a group of individuals?
+
+--
+
+- How many people live in each US state?
+
+---
+
+#### 2. Exploratory
+
+One in which you analyze the data to see if there are patterns, trends, or relationships between variables looking for patterns that would support proposing a hypothesis to test in a future study.
+
+--
+
+Examples:
+
+- Do diets rich in certain foods have differing frequencies of viral illnesses **in a set of data** collected from a group of individuals? 
+
+--
+
+- Does air pollution correlate with life expectancy **in a set of data** collected from groups of individuals from several regions in the United States?  
+
+---
+
+&lt;div class="figure"&gt;
+&lt;img src="img/what_is_the_question.png" alt="What is the question? by Roger Peng and Jeff Leek" width="50%" /&gt;
+&lt;p class="caption"&gt;What is the question? by Roger Peng and Jeff Leek&lt;/p&gt;
+&lt;/div&gt;
+
+---
+#### 3. Inferential
+
+One in which you analyze the data to see if there are patterns, trends, or relationships between variables in a representative sample. We want to quantify how much the patterns, trends, or relationships between variables is applicable to all individuals units in the population.
+
+--
+
+Examples:
+
+- Is eating at least 5 servings a day of fresh fruit and vegetables is associated with fewer viral illnesses per year?
+
+--
+
+- Is the gestational length of first born babies the same as that of non-first borns?
+
+---
+
+#### 4. Predictive
+
+One where you are trying to predict measurements or labels for individuals (people or things). Less interested in what causes the predicted outcome, just what predicts it.
+
+--
+
+Examples: 
+
+- How many viral illnesses will someone have next year?
+
+--
+
+- What political party will someone vote for in the next US election?
+
+
+---
+
+&lt;div class="figure"&gt;
+&lt;img src="img/what_is_the_question.png" alt="What is the question? by Roger Peng and Jeff Leek" width="50%" /&gt;
+&lt;p class="caption"&gt;What is the question? by Roger Peng and Jeff Leek&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+#### 5. Causal
+
+Asks about whether changing one factor will change another factor, on average, in a population. Sometimes the underlying design of the data collection, by default, allows you to answer a causal question (e.g., *randomized experiment* or trial). 
+
+--
+
+However, in other cases the data collection does not allow the analysis to establish any causality. In particular,  in *observational studies* treatments are not controlled by design! observed confounders can be included in the analysis but unobserved ones usually exist. Thus, causal effects can not be naively established.
+
+
+--
+
+Examples:
+
+- Does eating at least 5 servings a day of fresh fruit and vegetables cause fewer viral illnesses per year? 
+
+--
+
+- Does smoking cause to cancer? 
+
+&gt; Note that designing an experiment where people are forced to smoke will be unethical! Observational data is usually used in this case.
+
+---
+
+#### 6. Mechanistic
+
+One that tries to explain the underlying mechanism of the observed patterns, trends, or relationship (how does it happen?)
+
+--
+
+Examples:
+
+- How do changes in diet lead to a reduction in the number of viral illnesses?
+
+--
+
+- How does how airplane wing design changes air flow over a wing, leading to decreased drag?
+
+---
+
+## Challenge #1
+
+What kind of statistical question is this?
+
+#### *Is a yet undiagnosed patient's breast cancer tumor malignant or benign?* 
+
+---
+
+## Challenge #2
+
+What kind of statistical question is this?
+
+#### *Is inhalation of marijuana associated with lung cancer?* 
+
+---
+
+## Challenge #2
+
+What kind of statistical question is this?
+
+#### *Does a truncation of the BRCA2 gene cause cancer?* 
+
+---
+
+## Challenge #4
+
+What kind of statistical question is this?
+
+#### *Are there sub-types of ovarian tumors?*
+
+---
+
+### So you know the type of question, now what?
+
+.pull-left[
+This helps narrow down the possibilities 
+of the kind of analysis you might want to do!
+
+--
+
+For example, if you have the question: **"How many viral illnesses will someone have next year?"**
+and you identify that it is **predictive.**
+You could narrow down that some kind of statistical or machine learning model 
+might help you answer that.
+
+--
+
+Then you need to go a step deeper and look at the data that you have, 
+and see which kind of statistical 
+or machine learning model is most suitable for your data.
+]
+
+.pull-right[
+&lt;img src="https://scikit-learn.org/stable/_static/ml_map.png" width=700&gt;
+
+Source: [scikit-learn algorithm cheat sheet](https://scikit-learn.org/stable/tutorial/machine_learning_map/index.html)
+]
+---
+
+## Another example 
+
+.pull-left[
+For example, if you have the question: "Is the gestational length of first born babies the same as that of non-first borns?"
+and you identify that it is inferential. 
+You could narrow down that some kind of statistical inference approach 
+might help you answer that.
+
+--
+
+Then again, you need to go a step deeper and look at the data that you have, 
+and see which kind of statistical inference approach is most suitable for your data.
+]
+
+.pull-right[
+&lt;img src="https://onishlab.colostate.edu/wp-content/uploads/2019/07/which_test_flowchart.png" width=700&gt;
+
+Source: https://onishlab.colostate.edu/summer-statistics-workshop-2019/
+
+Or for another, see this website: http://www.biostathandbook.com/testchoice.html
+]
+
+---
+
+## Practice
+
+---
+
+### Case 1
+
+Question: *Is a yet undiagnosed patient's breast cancer tumor malignant or benign?*
+
+Data:
+
+
+|     ID|     Radius|   Texture|  Perimeter|       Area| Smoothness|Class |
+|------:|----------:|---------:|----------:|----------:|----------:|:-----|
+| 926125|  1.9275296| 1.3485941|  2.1001278|  1.9667039|  0.9627130|M     |
+| 926424|  2.1091388| 0.7208383|  2.0589739|  2.3417954|  1.0409262|M     |
+| 926682|  1.7033556| 2.0833009|  1.6145108|  1.7223261|  0.1023682|M     |
+| 926954|  0.7016669| 2.0437755|  0.6720844|  0.5774446| -0.8397450|M     |
+| 927241|  1.8367249| 2.3344032|  1.9807813|  1.7336925|  1.5244257|M     |
+|  92751| -1.8068114| 1.2207179| -1.8127934| -1.3466044| -3.1093489|B     |
+
+Data reference: https://archive-beta.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+diagnostic
+
+---
+
+### Case 2
+
+Question: *Is inhalation of marijuana associated with lung cancer?*
+
+Data:
+
+
+|    ID|sex    |gender | age| smoker|marijuana_use |  bmi| lung_cancer|
+|-----:|:------|:------|---:|------:|:-------------|----:|-----------:|
+| 54318|male   |fluid  |  35|      1|never         | 22.3|           0|
+| 57041|male   |male   |  43|      0|frequent      | 18.0|           0|
+| 58466|male   |male   |  29|      0|sometimes     | 32.5|           1|
+| 52761|female |female |  54|      0|frequent      | 20.0|           0|
+| 50318|female |female |  37|      0|never         | 26.1|           0|
+| 50582|male   |male   |  51|      0|never         | 29.8|           1|
+
+*Note: this is simulated data.*
+
+---
+
+### Case 3
+
+Question: *Does a truncation of the BRCA2 gene cause cancer?*
+
+Data:
+
+
+|    ID|sex    |gender | age| smoker|  bmi| brca2_truncation|
+|-----:|:------|:------|---:|------:|----:|----------------:|
+| 26132|male   |fluid  |  35|      1| 22.3|                1|
+| 20236|male   |male   |  43|      0| 18.0|                0|
+| 28331|male   |male   |  29|      0| 32.5|                1|
+| 27334|female |female |  54|      0| 20.0|                0|
+| 21640|female |female |  37|      0| 26.1|                0|
+| 25731|male   |male   |  51|      0| 29.8|                0|
+
+*Note: this is simulated data.*
+
+---
+
+### Case 4
+
+Question: *Are there sub-types of ovarian tumors?*
+
+Data:
+
+
+|     ID|     Radius|   Texture|  Perimeter|       Area| Smoothness|
+|------:|----------:|---------:|----------:|----------:|----------:|
+| 926125|  1.9275296| 1.3485941|  2.1001278|  1.9667039|  0.9627130|
+| 926424|  2.1091388| 0.7208383|  2.0589739|  2.3417954|  1.0409262|
+| 926682|  1.7033556| 2.0833009|  1.6145108|  1.7223261|  0.1023682|
+| 926954|  0.7016669| 2.0437755|  0.6720844|  0.5774446| -0.8397450|
+| 927241|  1.8367249| 2.3344032|  1.9807813|  1.7336925|  1.5244257|
+|  92751| -1.8068114| 1.2207179| -1.8127934| -1.3466044| -3.1093489|
+
+*Note: this is simulated data.*
+
+---
+
+## Some key notes:
+
+- identifying whether there even is a response variable is important!
+
+- the kind of response variable/target is critical for narrowing down the method
+
+- the explanatory variables/predictors/features are also important, but I consider these after the response variable
+
+---
+
+## A question for you!
+
+Write down one statistical question you are trying to answer with your research.
+
+Identify the type of question it is.
+
+---
+
+## The statistical landscape in R
+
+Common packages include:
+
+&lt;img src="img/stat-landscape.png" width="80%" /&gt;
+
+---
+
+## Example of an inferential analysis in R
+
+Question: *Does sexual activity effect the longevity of male fruit flies?*
+
+--
+
+What kind of question is this?
+
+---
+
+## Data
+
+Fruitflies were divided randomly into groups of 25 each. 
+The response was the longevity of the fruitfly in days. One group was kept
+solitary, while another was given 8 virgin females per day. 
+
+
+```r
+library(tidyverse)
+fruitfly_2_groups &lt;- read_csv("data/fruitfly_2_groups.csv")
+fruitfly_2_groups
+```
+
+```
+## # A tibble: 50 × 2
+##    longevity sexually_active
+##        &lt;dbl&gt; &lt;chr&gt;          
+##  1        40 No             
+##  2        37 No             
+##  3        44 No             
+##  4        47 No             
+##  5        47 No             
+##  6        47 No             
+##  7        68 No             
+##  8        47 No             
+##  9        54 No             
+## 10        61 No             
+## # … with 40 more rows
+```
+
+*Note: this is a modification of the original data set where we only considered two of the groups from the original experiment.* 
+*Original data source: [`faraway` R package](https://cran.r-project.org/web/packages/faraway/faraway.pdf).*
+
+---
+
+## So how should we analyze this data?
+
+- What is our response variable? What kind of data is it?
+
+- What is our explanatory variable? What kind of data is it?
+
+---
+
+## So how should we analyze this data?
+
+- a t-test is suitable here (as would be a permutation test for difference of means, or a Mann Whitney U Test)
+
+- to perform this, we need to parameterize null ($H_0$) and alternative hypotheses ($H_A$):
+
+*$H_0$: There **is no** difference in mean longevity of sexually active and non-sexually active male fruitflies.*
+
+*$H_A$: There **is** difference in mean longevity of sexually active and non-sexually active male fruitflies.*
+
+---
+
+## Always start with a visualization
+
+- The visualization should be related to your question!
+- It should complement your statistical method(s)
+
+--
+
+- We are interested in the mean - the population mean however!
+
+--
+
+- **So here, we should visualize our estimates of the population means, as well as our uncertainty about them!**
+
+---
+
+## Visualizing estimates and their uncertainty
+
+1. Calculate estimates &amp; uncertainty
+
+2. Visualize estimates and uncertainty, communicating as much about the underlying sample data as possible!
+
+---
+
+## Calculate estimates &amp; uncertainty
+
+Here we calculate the sample means and 95% confidence interval for a mean 
+using the t-distribution, assuming independence and the central limit theorem.
+
+
+```r
+fruitfly_2_estimates &lt;- fruitfly_2_groups %&gt;% 
+  group_by(sexually_active) %&gt;% 
+  summarise(mean = mean(longevity),
+              n = n(),
+              se = sd(longevity) / sqrt(n()),
+              df = n - 1,
+              t_star = qt(0.975, df),
+              lower = mean - t_star * se,
+              upper = mean + t_star * se)
+
+fruitfly_2_estimates
+```
+
+```
+## # A tibble: 2 × 8
+##   sexually_active  mean     n    se    df t_star lower upper
+##   &lt;chr&gt;           &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 No               63.6    25  3.29    24   2.06  56.8  70.4
+## 2 Yes              38.7    25  2.42    24   2.06  33.7  43.7
+```
+
+---
+
+## Final visualization
+
+
+```r
+# plot raw data points for each group as a transparent grey/black point
+# overlay mean as a red diamond
+fruitfly_2_estimates_viz &lt;- ggplot(fruitfly_2_groups, aes(x = sexually_active, y = longevity)) +
+    geom_jitter(width = 0.1, size = 2, alpha = 0.2) +
+    stat_summary(fun = mean,
+                 geom = "point", shape = 18, 
+                 size = 4, color = "blue") +
+    geom_errorbar(data = fruitfly_2_estimates,
+                  mapping = aes(x = sexually_active, 
+                                y = mean,
+                                ymin = lower, 
+                                ymax = upper), 
+                  width = 0.15, colour = "blue", size = 1) + 
+    ylim(c(0, 100)) +
+    ylab("Longevity (days)") +
+    xlab("Sexual activity") +
+    theme_bw() +
+    theme(text = element_text(size=20))
+```
+
+---
+
+class: center
+
+
+```r
+fruitfly_2_estimates_viz
+```
+
+![](intro-biostat_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+--
+
+What do we think so far? Are we likely to reject the null hypothesis?
+
+---
+
+## Example of t-test
+
+
+```r
+fruitfly_2_ttest &lt;- t.test(longevity ~ sexually_active, data = fruitfly_2_groups)
+fruitfly_2_ttest
+```
+
+```
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  longevity by sexually_active
+## t = 6.0811, df = 44.09, p-value = 2.545e-07
+## alternative hypothesis: true difference in means between group No and group Yes is not equal to 0
+## 95 percent confidence interval:
+##  16.60817 33.07183
+## sample estimates:
+##  mean in group No mean in group Yes 
+##             63.56             38.72
+```
+
+--
+
+How do we parse this output?
+
+---
+
+## Using base R
+
+
+```r
+fruitfly_2_ttest$p.value
+```
+
+```
+## [1] 2.545463e-07
+```
+
+
+```r
+fruitfly_2_ttest$statistic
+```
+
+```
+##        t 
+## 6.081128
+```
+
+---
+
+## Using `broom`
+
+
+```r
+library(broom)
+fruitfly_2_ttest_tidy &lt;- tidy(fruitfly_2_ttest)
+```
+
+
+```r
+fruitfly_2_ttest_pval &lt;- fruitfly_2_ttest_tidy %&gt;%
+    select(p.value) %&gt;%
+    pull()
+
+fruitfly_2_ttest_pval
+```
+
+```
+## [1] 2.545463e-07
+```
+
+---
+
+## What are our conclusions?
+
+--
+
+The male fruitflys which were not sexually active were observed to have 
+an increased lifespan
+(they lived 24.84 days longer).  
+Specifically, the male fruitflys which were not sexually active had a mean lifespan of 
+64 (95% confidence interval was 57, 70) 
+days,
+while male fruitflys which were sexually active had a mean lifespan of 
+39 (95% confidence interval was 34, 44) 
+days.
+
+Carrying out a t-test (assuming independence and the central limit theorem) 
+with alpha set to 0.05,
+indicated that we have enough statistical evidence to reject our null hypothesis, `\(H_0\)`,
+as our p-value was much smaller than alpha (p = 2.5454628\times 10^{-7}).
+
+
+We can accept the alternative hypothesis that, `\(H_1\)`, 
+that there is a difference in the male fruitfly lifespan
+when males are sexually active compared to when they are not.
+Due to the randomized experimental design, 
+we can also suggest that this effect of sexual activity is causal on the change in lifespan.
+Specifically, sexual activity in male fruitflys decreases lifespan.
+
+---
+
+## Summary
+
+1. Identify the kind of question
+
+2. Look at the data
+
+3. Identify a **suitable** statistical method for your question and data
+
+4. Create a visualization
+
+5. Apply your statistical method
+
+6. (maybe create another visualization)
+
+7. Interpret and communicate your assumptions and results
+
+---
+
+## Questions?
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"slideNumberFormat": "%current%",
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
