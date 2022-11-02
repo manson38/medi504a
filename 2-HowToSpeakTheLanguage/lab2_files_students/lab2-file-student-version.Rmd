@@ -240,9 +240,20 @@ Reasoning:
 Using `iris` dataset reproduce the following plot: 
 
 ![Plot title. ](figures/task3.png)
+```{r}
+head(iris)
+```
+
+
 
 ```{r}
-
+iris %>% 
+  ggplot(aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point(aes(colour = Species)) +
+  facet_wrap(. ~ Species) +
+  geom_smooth(method = "lm", show.legend = FALSE)
+  
+  
 ```
 
 
