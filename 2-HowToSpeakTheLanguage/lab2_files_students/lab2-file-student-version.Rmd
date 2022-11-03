@@ -196,20 +196,24 @@ ggplot(diab1 %>%  filter(Age<50),
 
 2.1 Summarize what is the role of arguments `plot.*`,`panel.*`,`axis.*`, and `legend.*`
 
-plot.background - 
-plot.title - 
-plot.caption -
+`plot.*` arguments enable customization of the overall appearance of the plot, outside of the plotting surfaces (not including axis labels). Examples of items that can be customized in this type of argument are the overall background, overall plot title, and plot captions. Customizations include colour, size, orientation, font style, and more. 
+*plot.background* - changes the background of the entire plot, not including the plotting surface panels
+*plot.title* - allows customization of the overarching plot title dimensions/location
+*plot.caption* - allows customization of plot caption (size, orientation, colour, etc.) 
 
-panel.background -
-panel.border -
-panel.grid.major.x -
-panel.grid.minor.y -
-    
-axis.title.x -
-axis.title.y -
-axis.text -
-axis.text.x.bottom -
-    
+`panel.*` arguments enable customization of the plotting surface panels. Examples of items that can be customized here include the background of the panel(s), the border around the panel(s), and the plotting panel grid lines. Customizations include colour, size/thickness, line types and more. 
+*panel.background* - Enables customization of the plotting surface panel background (above, colour was customized to blue)
+*panel.border* - customization of the border around the plotting surface panels in the plot (above, border width and colour was customized)
+*panel.grid.major.x* - customizing of the major x axis associated grid lines. Note, minor grid line customization is also possible (above, colour and line type was customized)
+*panel.grid.minor.y* - enables customizing of the minor y axis associated grid lines. Note, major grid line customization of y axis associated lines is also possible, as above. (in the figure above, minor grid lines were removed)
+
+`axis.*` arguments enable the customization of anything associated with the axes of the plot. This includes axis titles, labels and more by colour, spacing, size, orientation, and more. 
+*axis.title.x* -
+*axis.title.y* -
+*axis.text* -
+*axis.text.x.bottom* -
+
+`legend.*` 
 legend.background -
 legend.key -
 legend.direction -
