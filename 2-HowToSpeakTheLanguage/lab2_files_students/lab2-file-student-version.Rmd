@@ -250,27 +250,47 @@ head(iris)
 Let's recreate the plot!
 
 ```{r}
+
+# creating plot A
 plotA <- iris %>% 
-  ggplot(aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) +
-  geom_point(show.legend = FALSE) +
-  geom_smooth(method = "lm", show.legend = FALSE) +
-  facet_wrap(. ~ Species) +
-  theme_cowplot() + 
-  theme(panel.grid.major.y = element_line(colour = "gray"), panel.border = element_rect(colour = "gray"))
+  ggplot(aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) + #colour set to species, default colour matches
+  geom_point(show.legend = FALSE) + #remove legend with show.legend = FALSE
+  geom_smooth(method = "lm", show.legend = FALSE) + #linear model visualization 
+  facet_wrap(. ~ Species) + #facet wrapping on species to divide into 3 plots horizontally
+  theme_cowplot() + #setting theme
+  theme(panel.grid.major.y = element_line(colour = "gray"), #customizing background of plot to match
+        panel.border = element_rect(colour = "gray"), 
+        axis.title = element_text(size = 12)) #customizing axis label size
 
+# creating plot B
 plotB <- iris %>% 
-    ggplot(aes(x = Sepal.Length, fill = Species)) +
-    geom_density(alpha = 0.7, show.legend = FALSE) +
-    scale_y_continuous(breaks = seq(0, 1.25, by = 0.25), expand = c(0, 0), limits = c(0, 1.3)) +
-    theme_cowplot()
+    ggplot(aes(x = Sepal.Length, fill = Species)) + #filling based on species
+    geom_density(alpha = 0.7, show.legend = FALSE) + #species fill inherited from above, default colours match example, custom transparency with alpha
+    scale_y_continuous(breaks = seq(0, 1.25, by = 0.25), expand = c(0, 0), limits = c(0, 1.3)) + #customizing the y axis scale to match with more frequent breaks than default
+    theme_cowplot() +
+    theme(axis.title = element_text(size = 12))
 
+# creating plot C
 plotC <- iris %>% 
-    ggplot(aes(x=Sepal.Width, fill = Species)) +
-    geom_density(alpha = 0.7, show.legend = FALSE) +
+    ggplot(aes(x=Sepal.Width, fill = Species)) + 
+    geom_density(alpha = 0.7) +
     scale_y_continuous(breaks = seq(0, 1.25, by = 0.25), expand = c(0, 0), limits = c(0, 1.35)) +
-    theme_cowplot()
+    theme_cowplot() +
+    theme(legend.justification = c("right", "top"), #legend stays in this one, with position customization to top right
+          legend.title = element_text(size = 12), #custom legend title size
+          legend.text = element_text(size = 10), #custom legend text size
+          axis.title = element_text(size = 12))
 
-#plot_grid ###SOMEHOW...
+
+### Now, combining the 3 plots using cowplot... this will need to be nested because of the different size plots on each row...
+
+#creating the bottom part of the plot by combining plotB and plotC with plot_grid
+bottom <- plot_grid(plotB, plotC, labels = c('B', 'C'), nrow = 1, rel_widths = c(1.5,2)) #rel.width customization to accommodate legend on plotC
+
+#creating final plot with plot_grid using plotA as top and plot named 'bottom' (directly above) as bottom in 1 column. 
+answer3 <- plot_grid(plotA, bottom, labels = c('A', ''), ncol = 1) 
+
+answer3
 
 ```
 
