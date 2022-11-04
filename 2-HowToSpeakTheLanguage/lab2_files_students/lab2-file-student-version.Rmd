@@ -214,27 +214,68 @@ ggplot(diab1 %>%  filter(Age<50),
 *axis.text.x.bottom* -
 
 `legend.*` 
-legend.background -
-legend.key -
-legend.direction -
-legend.position -
+*legend.background* -
+*legend.key* -
+*legend.direction* -
+*legend.position* -
 
 
 2.2 Based on your interpretation of this bad plot, what research question do you think the plot-creators are trying to answer with this plot?
 
-Research question I think they are trying to answer:
-Reasoning: 
+**Research question I think they are trying to answer:** How do diabetes status and age influence the relationship between blood pressure and and in those under 50 years old?
 
 
 2.3 Using the principles of effective visualization, correct the figure. Comment on the steps you took to improve the plot and explain your choice.
 
 ```{r exercise2.3,  fig.height=6, fig.width=10}
 # Modified Plot 
-
+ggplot(diab1 %>%  filter(Age<50), 
+       mapping = aes(x = BloodPressure, y = Pregnancies, col = age_decade)) + 
+  geom_point(size = 3, alpha = 0.7) + 
+  facet_grid(Outcome ~ age_decade) +
+  theme(
+    plot.background = element_rect(fill = "lightyellow"),
+    plot.title = element_text(size = 25, hjust = 0.5),
+    plot.caption = element_text(size = 10, face = "italic"),
+    
+    ##########STOPPED MAKING EDITS HERE...############################
+    
+    panel.background = element_rect(fill = 'lightblue', colour = 'darkred', size = 4),
+    panel.border = element_rect(fill = NA, color = "green", size = 2),
+    panel.grid.major.x = element_line(color = "purple", linetype = 2),
+    panel.grid.minor.y = element_blank(),
+    
+    axis.title.x = element_text(face = "bold.italic", color = "blue"),
+    axis.title.y = element_text(family = "mono", face = "bold", size = 20, hjust = 0.25),
+    axis.text = element_text(face = "italic", size = 15),
+    # note that axis.text options from above are inherited
+    axis.text.x.bottom = element_text(angle = 180), 
+    
+    # generally will want to match w plot background
+    legend.background = element_rect(fill = "orangered4"), 
+    legend.key = element_rect(fill = "orange"),
+    legend.direction = "horizontal",
+    legend.position = "bottom") +
+  
+  labs(title = "Number of Times Pregnant vs Blood Pressure",
+       subtitle = "this is not a nice plot",
+       x = "Diastolic blood pressure (mm Hg)",
+       y = "Number of times Pregnant",
+       caption = "ages <50 are shown",
+       col = "Renamed Legend") 
 
 ```
 
 <!-- Add your explanations here -->
+
+Below is a numbered list of the changes I made to this plot. To make these changes, I worked through the code from top to bottom, reflecting on what each argument does whether making a change to such argument would result in a more effective visualization. 
+
+1. Reduce point size to reduce overlap (changed size from 5 to 3 in geom_point).
+2. Add transparency to the points to highlight dense areas in the plot (added alpha = 0.5 in geom_point) 
+3. Moved Outcome facet labels back to the default (right) side to prevent cluttering of the y-axis scale on the left size (removed switch = "y" from facet_grid)
+4. Centered the main plot title and resized its text (changed the plot.title = element_text() arguments from size = 30 to 25 and hjust=0.25 to 0.5)
+5. Removed the awkward angle on the plot caption (removed angle argument from plot.caption = element_text())
+6. 
 
 
 
@@ -326,9 +367,10 @@ The Canadian Census identifies the following categories in its Census of the Pop
 
 Import the dataset `ethnicity_data.csv` and  examine how "messy" the data input format. 
 ```{r}
+ethnicity <- read.csv("data/ethnicity_data.csv")
 
+ethnicity
 ```
-
 
 Imagine you were tasked to present the data for the conference/board meeting to show the ethnic diversity of your patients.
 
@@ -337,6 +379,8 @@ Imagine you were tasked to present the data for the conference/board meeting to 
 First, try to convert the dataset in a more tidy form (For instance, making ethnicity labels shorter: `Chinese (including Hong Kong and Macau)` transformed to `Chinese`). Hint: you can create a new column for each ethnicity, and add value 1 if the person selected that category , and 0 if it was not selected. 
 ```{r exercise4.1}
 # tidying up dataset 
+
+
 
 ```
 
