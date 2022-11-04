@@ -398,17 +398,28 @@ ethnicity %>% separate(Ethnicity, into = c("Indigenous person of Canada (First N
                                                 "West Asian (e.g. Afghan, Iranian, Syrian, etc)", 
                                                 "White", 
                                                 "None of the above",
-                                                "Prefer not to answer"), sep = "/,/") 
+                                                "Prefer not to answer"), sep = "/,", remove = FALSE) %>% 
+  
+                rename('Indigenous (in Canada)' = 'Indigenous person of Canada (First Nations, Inuit, Métis)', 
+                        Chinese = 'Chinese (including Hong Kong and Macau)',
+                        'Latin, Central or South American' = 'Latin, Central, or South American (e.g. Brazilian, Chilean, Colombian, Mexican)', 
+                        'South Asian' = 'South Asian (e.g. Indian, Pakistani, Sri Lankan, etc.)',
+                        'West Asian' = 'West Asian (e.g. Afghan, Iranian, Syrian, etc)')
+
+
+                    #### NOW, to fill in the NA's with 1 or 0 values based on whats in the Ethnicity column. 
+         
+         
+                                    
                                   
-
-
-#library(qdapTools)
-#mtabulate(strsplit(ethnicity$Ethnicity, "/,/"))
 
 ```
 
 
 ```{r}
+
+# OTHER ATTEMPTS... 
+
 ethnicity %>% separate(Ethnicity, c("Indigenous person of Canada (First Nations, Inuit, Métis)",
                                     "Indigenous (outside of Canada)",
                                     "Arab", 
@@ -424,6 +435,9 @@ ethnicity %>% separate(Ethnicity, c("Indigenous person of Canada (First Nations,
                                     "White", 
                                     "None of the above",
                                     "Prefer not to answer"), extra = "drop", fill = "right")
+
+#library(qdapTools)
+#mtabulate(strsplit(ethnicity$Ethnicity, "/,/"))
 ```
 
 
