@@ -272,9 +272,7 @@ ggplot(diab1 %>%  filter(Age<50),
    
 ```
 
-<!-- Add your explanations here -->
-
-Below is a numbered list of the changes I made to this plot. To make these changes, I worked through the code from top to bottom, reflecting on what each argument does whether making a change to such argument would result in a more effective visualization. 
+Below is a numbered list of the changes I made to the original plot, to create the new an improved plot above. To make these changes, I worked through the code from top to bottom, reflecting on what each argument does whether making a change to such argument would result in a more effective visualization. 
 
 1. Reduce point size to reduce overlap (changed size from 5 to 3 in geom_point).
 2. Add transparency to the points to highlight dense areas in the plot (added alpha = 0.5 in geom_point) 
