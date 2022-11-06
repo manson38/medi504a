@@ -354,21 +354,21 @@ Imagine that during a survey, the patients were asked to answer the question of 
 
 The Canadian Census identifies the following categories in its Census of the Population (see options below). Please indicate how you self-identify (you can select more than one category). This self-identification is not intended as an indication of one’s place of origin, citizenship, language or culture and recognizes that there are differences both between and among subgroups of persons of colour. If you are of mixed-descent, please indicate this by selecting all that apply, rather than using the “other” line unless parts of your self-identification do not appear in this list.
 
-- Indigenous person of Canada (First Nations, Inuit, Métis)
-- Indigenous (outside of Canada)
-- Arab 
-- Black 
-- Chinese (including Hong Kong and Macau)
-- Filipino
-- Japanese
-- Korean
-- Latin, Central, or South American (e.g. Brazilian, Chilean, Colombian, Mexican) 
-- South Asian (e.g. Indian, Pakistani, Sri Lankan, etc.)
-- Southeast Asian (e.g. Cambodian, Indonesian, Laotian Vietnamese, etc) 
-- West Asian (e.g. Afghan, Iranian, Syrian, etc) 
-- White 
-- None of the above
-- Prefer not to answer
+- Indigenous person of Canada (First Nations, Inuit, Métis) *#unique = Inuit*
+- Indigenous (outside of Canada) *#unique = outside*
+- Arab *#unique = Arab*
+- Black *#unique = Black*
+- Chinese (including Hong Kong and Macau) *#unique = Chinese*
+- Filipino *#unique = Filipino*
+- Japanese *#unique = Japanese*
+- Korean *#unique = Korean*
+- Latin, Central, or South American (e.g. Brazilian, Chilean, Colombian, Mexican) *#unique = Latin*
+- South Asian (e.g. Indian, Pakistani, Sri Lankan, etc.) *#unique = Indian*
+- Southeast Asian (e.g. Cambodian, Indonesian, Laotian Vietnamese, etc) *#unique = Cambodian*
+- West Asian (e.g. Afghan, Iranian, Syrian, etc) *#unique = West*
+- White *#unique = White*
+- None of the above *#unique = None*
+- Prefer not to answer *#unique = Prefer*
 
 Import the dataset `ethnicity_data.csv` and  examine how "messy" the data input format. 
 ```{r}
@@ -382,62 +382,40 @@ Imagine you were tasked to present the data for the conference/board meeting to 
 ## 4.1 Wrangling practice
 
 First, try to convert the dataset in a more tidy form (For instance, making ethnicity labels shorter: `Chinese (including Hong Kong and Macau)` transformed to `Chinese`). Hint: you can create a new column for each ethnicity, and add value 1 if the person selected that category , and 0 if it was not selected. 
+
 ```{r exercise4.1}
-# tidying up dataset 
 
-ethnicity %>% separate(Ethnicity, into = c("Indigenous person of Canada (First Nations, Inuit, Métis)",
-                                                "Indigenous (outside of Canada)",
-                                                "Arab", 
-                                                "Black ",
-                                                "Chinese (including Hong Kong and Macau)",
-                                                "Filipino",
-                                                "Japanese",
-                                                "Korean",
-                                                "Latin, Central, or South American (e.g. Brazilian, Chilean, Colombian, Mexican)", 
-                                                "South Asian (e.g. Indian, Pakistani, Sri Lankan, etc.)",
-                                                "West Asian (e.g. Afghan, Iranian, Syrian, etc)", 
-                                                "White", 
-                                                "None of the above",
-                                                "Prefer not to answer"), sep = "/,", remove = FALSE) %>% 
-  
-                rename('Indigenous (in Canada)' = 'Indigenous person of Canada (First Nations, Inuit, Métis)', 
-                        Chinese = 'Chinese (including Hong Kong and Macau)',
-                        'Latin, Central or South American' = 'Latin, Central, or South American (e.g. Brazilian, Chilean, Colombian, Mexican)', 
-                        'South Asian' = 'South Asian (e.g. Indian, Pakistani, Sri Lankan, etc.)',
-                        'West Asian' = 'West Asian (e.g. Afghan, Iranian, Syrian, etc)')
-
-
-                    #### NOW, to fill in the NA's with 1 or 0 values based on whats in the Ethnicity column. 
-         
-         
-                                    
-                                  
-
-```
-
-
-```{r}
-
-# OTHER ATTEMPTS... 
-
-ethnicity %>% separate(Ethnicity, c("Indigenous person of Canada (First Nations, Inuit, Métis)",
-                                    "Indigenous (outside of Canada)",
-                                    "Arab", 
-                                    "Black ",
-                                    "Chinese (including Hong Kong and Macau)",
-                                    "Filipino",
-                                    "Japanese",
-                                    "Korean",
-                                    "Latin, Central, or South American (e.g. Brazilian, Chilean, Colombian, Mexican)", 
-                                    "South Asian (e.g. Indian, Pakistani, Sri Lankan, etc.)",
-                                    "Southeast Asian (e.g. Cambodian, Indonesian, Laotian Vietnamese, etc)", 
-                                    "West Asian (e.g. Afghan, Iranian, Syrian, etc)", 
-                                    "White", 
-                                    "None of the above",
-                                    "Prefer not to answer"), extra = "drop", fill = "right")
-
-#library(qdapTools)
-#mtabulate(strsplit(ethnicity$Ethnicity, "/,/"))
+ethnicityclean <- ethnicity %>% 
+   mutate('Indigenous (in Canada)' = factor(case_when(str_detect(Ethnicity, "Inuit") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate('Indigenous (outside Canada)' = factor(case_when(str_detect(Ethnicity, "outside") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate(Arab = factor(case_when(str_detect(Ethnicity, "Arab") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate(Black = factor(case_when(str_detect(Ethnicity, "Black") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate(Chinese = factor(case_when(str_detect(Ethnicity, "Chinese") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate(Filipino = factor(case_when(str_detect(Ethnicity, "Filipino") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate(Japanese = factor(case_when(str_detect(Ethnicity, "Japanese") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate(Korean = factor(case_when(str_detect(Ethnicity, "Korean") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate('Latin, Central, or South American' = factor(case_when(str_detect(Ethnicity, "Latin") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate('South Asian' = factor(case_when(str_detect(Ethnicity, "Indian") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate('Southeast Asian' = factor(case_when(str_detect(Ethnicity, "Cambodian") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate('West Asian' = factor(case_when(str_detect(Ethnicity, "West") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate(White = factor(case_when(str_detect(Ethnicity, "White") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate('None of the above' = factor(case_when(str_detect(Ethnicity, "None") ~ "1", 
+                                                           TRUE ~ "0"))) %>% 
+   mutate('Prefer not to answer' = factor(case_when(str_detect(Ethnicity, "Prefer") ~ "1", 
+                                                           TRUE ~ "0")))
 ```
 
 
