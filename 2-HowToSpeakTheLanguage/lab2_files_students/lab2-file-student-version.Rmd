@@ -208,8 +208,8 @@ ggplot(diab1 %>%  filter(Age<50),
 `panel.*` arguments enable customization of the plotting surface panels. Examples of items that can be customized here include the background of the panel(s), the border around the panel(s), and the plotting panel grid lines. Customizations include colour, size/thickness, line types and more. 
 *panel.background* - Enables customization of the plotting surface panel background (above, colour was customized to blue)
 *panel.border* - customization of the border around the plotting surface panels in the plot (above, border width and colour was customized)
-*panel.grid.major.x* - customizing of the major x axis associated grid lines. Note, minor grid line customization is also possible (above, colour and line type was customized)
-*panel.grid.minor.y* - enables customizing of the minor y axis associated grid lines. Note, major grid line customization of y axis associated lines is also possible, as above. (in the figure above, minor grid lines were removed)
+*panel.grid.major.x* - customizing of the major x axis associated grid lines (above, colour and line type was customized). Note, minor grid line customization is also possible.
+*panel.grid.minor.y* - enables customizing of the minor y axis associated grid lines (in the figure above, minor grid lines were removed). Note, major grid line customization of y axis associated lines is also possible, as above. 
 
 `axis.*` arguments enable the customization of anything associated with the axes of the plot. This includes axis titles, labels and more by colour, spacing, size, orientation, and more. 
 *axis.title.x* -
@@ -217,7 +217,7 @@ ggplot(diab1 %>%  filter(Age<50),
 *axis.text* -
 *axis.text.x.bottom* -
 
-`legend.*` 
+`legend.*` arguements enable customization of plot legends. Examples of customizations include the legend background (colour etc.), key, position relative to overally plotting surface, orientation (horizontal/vertical), and more. 
 *legend.background* -
 *legend.key* -
 *legend.direction* -
