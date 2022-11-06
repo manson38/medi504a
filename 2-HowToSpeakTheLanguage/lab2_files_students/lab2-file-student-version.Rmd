@@ -198,38 +198,40 @@ ggplot(diab1 %>%  filter(Age<50),
        col = "Renamed Legend") 
 ```
 
-2.1 Summarize what is the role of arguments `plot.*`,`panel.*`,`axis.*`, and `legend.*`
+## 2.1 Summarize what is the role of arguments `plot.*`,`panel.*`,`axis.*`, and `legend.*`
 
-`plot.*` arguments enable customization of the overall appearance of the plot, outside of the plotting surfaces (not including axis labels). Examples of items that can be customized in this type of argument are the overall background, overall plot title, and plot captions. Customizations include colour, size, orientation, font style, and more. 
-*plot.background* - changes the background of the entire plot, not including the plotting surface panels
-*plot.title* - allows customization of the overarching plot title dimensions/location
+`plot.*` arguments enable customization of the overall appearance of the plot, outside of the plotting surfaces (not including axis labels and titles). Examples of items that can be customized in this type of argument are the overall background, overall plot title, and plot captions, subtitles, margins and more. Customizations include colour, size, orientation, font style, and more. 
+*plot.background* - customizes the background of the entire plot, not including the plotting surface panels
+*plot.title* - allows customization of the overarching plot title (dimensions, location, etc.)
 *plot.caption* - allows customization of plot caption (size, orientation, colour, etc.) 
 
-`panel.*` arguments enable customization of the plotting surface panels. Examples of items that can be customized here include the background of the panel(s), the border around the panel(s), and the plotting panel grid lines. Customizations include colour, size/thickness, line types and more. 
-*panel.background* - Enables customization of the plotting surface panel background (above, colour was customized to blue)
+`panel.*` arguments enable customization of the plotting surface panels. Examples of items that can be customized here include the background of the panel(s), the border around the panel(s), and the plotting panel grid lines, panel spacing, and more similar items. Customizations include colour, size/thickness, line types and more. 
+*panel.background* - enables customization of the plotting surface panel background (above, colour was customized to blue)
 *panel.border* - customization of the border around the plotting surface panels in the plot (above, border width and colour was customized)
-*panel.grid.major.x* - customizing of the major x axis associated grid lines (above, colour and line type was customized). Note, minor grid line customization is also possible.
-*panel.grid.minor.y* - enables customizing of the minor y axis associated grid lines (in the figure above, minor grid lines were removed). Note, major grid line customization of y axis associated lines is also possible, as above. 
+*panel.grid.major.x* - customizing of the major x axis associated grid lines on the panel (above, colour and line type was customized). Note, minor grid line customization is also possible.
+*panel.grid.minor.y* - enables customizing of the minor y axis associated grid lines on the panel (in the figure above, minor grid lines were removed). Note, major grid line customization of y axis associated lines is also possible, as above. 
 
-`axis.*` arguments enable the customization of anything associated with the axes of the plot. This includes axis titles, labels and more by colour, spacing, size, orientation, and more. 
-*axis.title.x* -
-*axis.title.y* -
-*axis.text* -
-*axis.text.x.bottom* -
+`axis.*` arguments enable the customization of anything associated with the axes of the plot. This includes axis titles, text labels, ticks, lines and more by colour, spacing, size, orientation, and far more. 
+*axis.title.x* - enables customization of the title for the x axis - specifically the font, size, colour, position, and more. 
+*axis.title.y* - enables customization of the title for the y axis - specifically the font, size, colour, position, and more. 
+*axis.text* - enables the customization of the text for both axis labels - specifically the font, font syle (face), size, colour, and more.  
+*axis.text.x.bottom* - enables the customization of the text on the x axis labels only. Note, y axis specific cusomization is also available as `axis.text.y.*`.
 
-`legend.*` arguements enable customization of plot legends. Examples of customizations include the legend background (colour etc.), key, position relative to overally plotting surface, orientation (horizontal/vertical), and more. 
-*legend.background* -
-*legend.key* -
-*legend.direction* -
-*legend.position* -
+`legend.*` arguments enable customization of plot legends. Examples of customizations include the legend background (colour, fill, etc.), key, position relative to overall plotting surface, orientation (horizontal/vertical), and more. 
+*legend.background* - enables customization of the background of the legend (above, fill was customized to orangered4)
+*legend.key* - enables customization of the background behind the legend key symbols (above, fill was customized to orange)
+*legend.direction* - enables customization of the stacking of the legend key items (i.e. horizontally, vertically)
+*legend.position* - enables customization of the location of the legend, either relative to the plotting surface, or custom using two position coordinates. 
+
+**NOTE**: the ggplot webpage titled "Modify components of a theme" is an excellent resource for guidance on customizing themes, or understanding what a theme argument does. It can be found here: [Modify components of a theme](https://ggplot2.tidyverse.org/reference/theme.html). 
 
 
-2.2 Based on your interpretation of this bad plot, what research question do you think the plot-creators are trying to answer with this plot?
+## 2.2 Based on your interpretation of this bad plot, what research question do you think the plot-creators are trying to answer with this plot?
 
 **Research question I think they are trying to answer:** How do diabetes status and age influence the relationship between blood pressure and number of pregnancies in those under 50 years old?
 
 
-2.3 Using the principles of effective visualization, correct the figure. Comment on the steps you took to improve the plot and explain your choice.
+## 2.3 Using the principles of effective visualization, correct the figure. Comment on the steps you took to improve the plot and explain your choice.
 
 ```{r exercise2.3,  fig.height=6, fig.width=10}
 # Modified Plot 
@@ -290,7 +292,7 @@ Using `iris` dataset reproduce the following plot:
 
 ![Plot title. ](figures/task3.png)
 
-First, a look at the iris data:
+First, a look at the iris data to familiarize myself with the variables:
 
 ```{r}
 head(iris)
@@ -354,7 +356,7 @@ Imagine that during a survey, the patients were asked to answer the question of 
 
 The Canadian Census identifies the following categories in its Census of the Population (see options below). Please indicate how you self-identify (you can select more than one category). This self-identification is not intended as an indication of one’s place of origin, citizenship, language or culture and recognizes that there are differences both between and among subgroups of persons of colour. If you are of mixed-descent, please indicate this by selecting all that apply, rather than using the “other” line unless parts of your self-identification do not appear in this list.
 
-- Indigenous person of Canada (First Nations, Inuit, Métis) *#unique = Inuit*
+- Indigenous person of Canada (First Nations, Inuit, Métis) *#unique identifier = Inuit*
 - Indigenous (outside of Canada) *#unique = outside*
 - Arab *#unique = Arab*
 - Black *#unique = Black*
@@ -416,6 +418,8 @@ ethnicityclean <- ethnicity %>%
                                                            TRUE ~ "0"))) %>% 
    mutate('Prefer not to answer' = factor(case_when(str_detect(Ethnicity, "Prefer") ~ "1", 
                                                            TRUE ~ "0")))
+
+ethnicityclean
 ```
 
 
