@@ -226,7 +226,7 @@ ggplot(diab1 %>%  filter(Age<50),
 
 2.2 Based on your interpretation of this bad plot, what research question do you think the plot-creators are trying to answer with this plot?
 
-**Research question I think they are trying to answer:** How do diabetes status and age influence the relationship between blood pressure and and in those under 50 years old?
+**Research question I think they are trying to answer:** How do diabetes status and age influence the relationship between blood pressure and number of pregnancies in those under 50 years old?
 
 
 2.3 Using the principles of effective visualization, correct the figure. Comment on the steps you took to improve the plot and explain your choice.
@@ -267,7 +267,7 @@ ggplot(diab1 %>%  filter(Age<50),
        y = "Number of times Pregnant",
        caption = "ages <50 are shown",
        col = "Renamed Legend") 
-
+   
 ```
 
 <!-- Add your explanations here -->
