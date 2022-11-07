@@ -100,6 +100,8 @@ diab1 %>%
   theme_classic()
 ```
 
+Looks good!
+
 
 ## 1.2 Ridge Plot
 
@@ -113,6 +115,8 @@ diab1 %>%
   labs(y = "Age (decades)", x = "Number of pregnancies") + #custom axis labels 
   theme_classic() #matching theme
 ```
+
+Looks good!
 
 
 ## 1.3 Composite Plot: scatter plot and baxplot plot 
@@ -150,7 +154,7 @@ answer1.3
 
 ```
 
-
+Looks great!
 
 
 # Task 2: Apply principles of effective visualizations
@@ -198,6 +202,7 @@ ggplot(diab1 %>%  filter(Age<50),
        col = "Renamed Legend") 
 ```
 
+
 ## 2.1 Summarize what is the role of arguments `plot.*`,`panel.*`,`axis.*`, and `legend.*`
 
 `plot.*` arguments enable customization of the overall appearance of the plot, outside of the plotting surfaces (not including axis labels and titles). Examples of items that can be customized in this type of argument are the overall background, overall plot title, and plot captions, subtitles, margins and more. Customizations include colour, size, orientation, font style, and more. 
@@ -233,6 +238,26 @@ ggplot(diab1 %>%  filter(Age<50),
 
 ## 2.3 Using the principles of effective visualization, correct the figure. Comment on the steps you took to improve the plot and explain your choice.
 
+Below is a numbered list of the changes I made to the original plot to create the new and improved plot above. To make these changes, I worked through the code from top to bottom, reflected on what each argument does, and decided whether making a change to such argument would result in a more effective visualization. 
+
+1. Reduce point size to reduce overlap (changed size from 5 to 3 in geom_point).
+2. Add transparency to the points to highlight dense (overplotted) areas in the plot (added alpha = 0.6 in geom_point) 
+3. Moved Outcome facet labels back to the default (right) side to prevent cluttering of the y-axis scale on the left size (removed switch = "y" from facet_grid)
+4. Centered the main plot title and resized its text (changed the plot.title = element_text() arguments from size = 30 to 25 and hjust=0.25 to 0.5)
+5. Centered the plot subtitle (added plot.subtitle = element_text() hjust = 0.5)
+6. Removed the awkward angle on the plot caption (removed angle argument from plot.caption = element_text())
+7. Removed the blue background and replaced it with white to improve contrast between background and plotted points (changed panel.background = element_rect() fill to white)
+8. Cleaned up the border around each panel (first, I removed the argument panel.border to eliminate the distracting green border. Second, I recoloured and resized the panel background outline by editing the argument panel.background = element_rect() - changed the colour from maroon to black, and decreased the size from 4 to 2.)
+9. Cleaned up the panel grid lines (first, I removed the panel.grid.minor.y argument, as it wasn't actually contributing to the plot due to the element_blank (because no preset theme is used in this plot, we need to specify every part of the plot for it to exist!). I replaced this with a more appropriate panel.grid.major.y argument (as this argument will produce grid lines that line up with axis labels). I made both panel.grid.major arguments match for a clean looking plot - faint grid line types in grey colour (rather than the original and random purple). In my opinion, grid lines are very valuable to understanding relative measurements represented by points.
+10. Fixed the axis titles by editing axis.title.* argument (specifically, I made the axis titles match in style and size, and used the default, professional looking font and black colour).
+11. Re-formated the axis text (i.e. the numbers). Here, I decided that the italic font was irrelevant and distracting, and reverted back to normal face by removing the face argument within axis.text = element_text(). I also re-sized the axis text to size 12 within the same argument, as I felt size 14 was far too large. Finally, I removed the argument axis.text.x.bottom = element_text(angle = 180), because a flip in the x axis labels was unnecessary complexity. 
+12. Cleaned up the legend (first, I made the background of the legend match the background of the overall plot background to prevent excessive use of distracting colour (previously maroon coloured). I decided that it would be beneficial to add a simple black border to the legend to make it appear organized. Both of these changes were made in the legend.background = element_rect() argument. Second, I utilized the argument legend.key = element_rect() to match the legend key backgrounds to the plot background, to make the legend more simple and clear.)
+13. Finally, I made changes in the labs() argument to better describe the plot and provide the relevant information to the viewer. Specifically, I rewrote the title using scientific plot title guidelines found online, provided a detailed subtitle explaining the facetting that takes place in this plot, and renamed the legend more appropriately.
+14. The caption was not contributing anything to the viewer's understanding of the plot at this point, so I decided to remove it from the plot entirely. This included removing 1) the plot.caption argument, and 2) the caption subargument within the labs argument. 
+
+
+After making all of the above changes, I ended up with the following plot:
+
 ```{r exercise2.3,  fig.height=6, fig.width=10}
 # Modified Plot 
 ggplot(diab1 %>%  filter(Age<50), 
@@ -242,7 +267,7 @@ ggplot(diab1 %>%  filter(Age<50),
   theme(
     plot.background = element_rect(fill = "lightyellow"),
     plot.title = element_text(size = 25, hjust = 0.5),
-    plot.caption = element_text(size = 10, face = "italic"),
+    plot.subtitle = element_text(hjust = 0.5),
     
     panel.background = element_rect(fill = 'white', colour = 'black', size = 2),
     panel.grid.major.x = element_line(color = "grey", linetype = 3),
@@ -255,38 +280,61 @@ ggplot(diab1 %>%  filter(Age<50),
     # generally will want to match w plot background
     legend.background = element_rect(fill = "lightyellow", colour = "black"), 
     legend.key = element_rect(fill = "lightyellow"),
-    
-    ###### STOPPED HERE ##########
-    
     legend.direction = "horizontal",
     legend.position = "bottom") +
   
-  labs(title = "Number of Times Pregnant vs Blood Pressure",
-       subtitle = "this is not a nice plot",
-       x = "Diastolic blood pressure (mm Hg)",
-       y = "Number of times Pregnant",
-       caption = "ages <50 are shown",
-       col = "Renamed Legend") 
+  labs(title = "Relationship Between Blood Pressure and the Number of Times Pregnant",
+       subtitle = "In Women Under 50, separated by Diabetes Status and Decade of Age",
+       x = "Diastolic Blood Pressure (mmHg)",
+       y = "Number of Times Pregnant",
+       col = "Age (by decade)") 
    
 ```
 
-Below is a numbered list of the changes I made to the original plot to create the new and improved plot above. To make these changes, I worked through the code from top to bottom, reflected on what each argument does, and decided whether making a change to such argument would result in a more effective visualization. 
+I still felt that this plot could be better. First, I thought that the yellow background was unnecessary, and so I removed it entirely (deleted plot.background = element_rect(fill = "lightyellow"), and edited the legend.background and legend.key arguments to match the white). Second, I thought that the coloured points (by age_decade) and top facet labels (20, 30, and 40) were relaying the same information (i.e. redundant), so I decided to remove the facet label titles and keep the legend and colour to provide the information on age in a single way. I also thought that the diabetes status facet labels were too small, so I increased their text size using strip.text.y = element_text(). Additionally, I wanted to make this plot more accessible, so I decided to use colour blind friendly colours (i.e. I added the arguement scale_colour_manual(values = c("#E69F00", "#009E73", "#56B4E9")). Finally, I thought that it made more sense to have number of times pregnant on the x axis, and blood pressure on the y axis, so I used coord_flip() to do this (note this was just personal preference). 
 
-1. Reduce point size to reduce overlap (changed size from 5 to 3 in geom_point).
-2. Add transparency to the points to highlight dense areas in the plot (added alpha = 0.6 in geom_point) 
-3. Moved Outcome facet labels back to the default (right) side to prevent cluttering of the y-axis scale on the left size (removed switch = "y" from facet_grid)
-4. Centered the main plot title and resized its text (changed the plot.title = element_text() arguments from size = 30 to 25 and hjust=0.25 to 0.5)
-5. Removed the awkward angle on the plot caption (removed angle argument from plot.caption = element_text())
-6. Removed the blue background and replaced it with white to improve contrast between background and plotted points (changed panel.background = element_rect() fill to white)
-7. Cleaned up the border around each panel (first, I removed the argument panel.border to eliminate the distracting green border. Second, I recoloured and resized the panel background outline by editing the argument panel.background = element_rect() - changed the colour from maroon to black, and decreased the size from 4 to 2.)
-8. Cleaned up the panel grid lines (first, I removed the panel.grid.minor.y argument, as it wasn't actually contributing to the plot due to the element_blank (because no preset theme is used in this plot, we need to specify every part of the plot for it to exist!). I replaced this with a more appropriate panel.grid.major.y argument (as this argument will produce grid lines that line up with axis labels). I made both panel.grid.major arguments match for a clean looking plot - faint grid line types in grey colour (rather than the original and random purple). In my opinion, grid lines are very valuable to understanding relative measurements represented by points.
-9. Fixed the axis titles by editing axis.title.* argument (specifically, I made the axis titles match in style and size, and used the default, professional looking font and black colour).
-10. Re-formated the axis text (i.e. the numbers). Here, I decided that the italic font was irrelevant and distracting, and reverted back to normal face by removing the face argument within axis.text = element_text(). I also re-sized the axis text to size 12 within the same argument, as I felt size 14 was far too large. Finally, I removed the argument axis.text.x.bottom = element_text(angle = 180), because a flip in the x axis labels was unnecessary complexity. 
-11. Cleaned up the legend (first, I made the background of the legend match the background of the overall plot background to prevent excessive use of distracting colour. I decided that it would be beneficial to add a simple black border to the legend to make it appear organized. Both of these changes were made in the legend.background = element_rect() argument. Second, I removed the argument legend.key = element_rect, as i felt it wasn't contributing to the visualization, but rather hindering the viewers ability to understand the legend.)
+Here is the further improved plot: 
 
-^^^^ edits needed to 11
+```{r exercise2.3,  fig.height=6, fig.width=10}
+# FINAL Modified Plot 
+ggplot(diab1 %>%  filter(Age<50), 
+       mapping = aes(x = BloodPressure, y = Pregnancies, col = age_decade)) + 
+  geom_point(size = 3, alpha = 0.6) + 
+  facet_grid(Outcome ~ age_decade) +
+  scale_colour_manual(values = c("#E69F00", "#009E73", "#56B4E9")) +
+  theme(
+    plot.title = element_text(size = 25, hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    
+    panel.background = element_rect(fill = 'white', colour = 'black', size = 2),
+    panel.grid.major.x = element_line(color = "grey", linetype = 3),
+    panel.grid.major.y = element_line(colour = "grey", linetype = 3),
+    
+    axis.title.x = element_text(size = 16, hjust = 0.5),
+    axis.title.y = element_text(size = 16, hjust = 0.5),
+    axis.text = element_text(size = 12),
+    
+    strip.text.x = element_blank(),
+    strip.text.y = element_text(size = 12),
+    
+    # generally will want to match w plot background
+    legend.background = element_rect(fill = "white", colour = "black"), 
+    legend.key = element_rect(fill = "white"),
+    legend.direction = "horizontal",
+    legend.position = "bottom") +
+  
+  labs(title = "Relationship Between Blood Pressure and the Number of Times Pregnant",
+       subtitle = "In Women Under 50, separated by Diabetes Status and Decade of Age",
+       x = "Diastolic Blood Pressure (mmHg)",
+       y = "Number of Times Pregnant",
+       col = "Age (by decade)") +
+  
+    coord_flip()
+```
 
+This plot follows the principles for effective visualizations. It respects the principle of proportional ink, has a realistic data:ink ratio, has and informative and concise title, labels, and legend, handles overplotting well with point size and alpha transparency, uses an effective plot for conveying the intended information, and is accessible! Most important of all, it is conceptually uniform and visually pleasing. 
 
+Based on this plot, it appears that there is little change in the relationship between blood pressure and the number of times pregnant, even when stratified by age (decades) and diabetes status. Some statistical tests would be helpful to confirm this.
 
 
 # Task 3: Advanced Figure Design
@@ -347,6 +395,8 @@ answer3 <- plot_grid(plotA, bottom, labels = c('A', ''), ncol = 1)
 answer3
 
 ```
+
+Looks good!
 
 
 
