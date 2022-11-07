@@ -513,7 +513,7 @@ Second, Try to create a visual to effectively show the diversity of patients' et
 
 # Submit Document
 
-- knit the document to pdf file.you need to have a TinyTeX  to be able to knit the document:
+- knit the document to pdf file. You need to have a TinyTeX to be able to knit the document:
 
 ```
 install.packages('tinytex')
