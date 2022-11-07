@@ -42,12 +42,17 @@ First import the dataset into the workspace:
 ```{r load-data}
 # import the dataset into the workspace
 diab <- read.csv("data/diabetes.csv") # It reads the CSV file and assigns to diab object
-head(diab)
-range(diab$Age)
+head(diab) #a look at the data
+range(diab$Age) #a look at the spread of ages in the data
 ```
 
 Please use the code chunk below to perform any modifications to original dataset.
 ```{r}
+
+#after looking at the exercises below, its clear that i'll need to do two modifications:
+#1. Mutate the Outcome variable to a factor (rather than interval)
+#2. Create a new variable that stratifies individuals into decade based age groups
+
 diab1 <- diab %>% 
   #changing the Outcome variable to a factor (categorical)
   mutate(Outcome = factor(case_when(Outcome == 1 ~ "Diabetes-Positive",
@@ -79,7 +84,7 @@ A quick look at our new dataframe:
 head(diab1)
 ```
 
-Great. It contains our new variable, age_decade, and re-named Outcome variable observations. 
+Great. `diab1` contains our new variable, age_decade, and a factored Outcome variable with re-named observations. 
 
 
 
@@ -88,6 +93,8 @@ Reproduce the following figures using the `diab` dataset:
 ## 1.1 Violin 
 
 ![Exrcise 1.1](figures/violin-plt.png)
+
+This plot visualizes the distribution of BMI within diabetes status groups. It uses both a box plot and violin plot (overlapping) to convey the data. Lets recreate this...
 
 ```{r answer1.1, fig.height=6, fig.width=10}
 #Plot Recreation:
@@ -113,6 +120,8 @@ Looks good!
 
 ![Exrcise 1.2](figures/ridge-plt.png)
 
+This plot is a density ridge plot of the number of pregnancies in each decade based age group. Lets recreate it!
+
 ```{r answer1.2}
 #Plot Recreation:
 diab1 %>% 
@@ -131,6 +140,8 @@ Looks good!
 ## 1.3 Composite Plot: scatter plot and baxplot plot 
 
 ![Exrcise 1.3](figures/composite-plt.png)
+
+This is a complex plot. It contains scatter plots with lines of best fit of the relationship between serum insulin and BMI and boxplots of the distribution of the number of pregnancies within each decade based age category. Both types of plots are stratified by diabetes status. Lets recreate this!
 
 ```{r answer 1.3,  fig.height=7, fig.width=10}
 
@@ -220,6 +231,7 @@ ggplot(diab1 %>%  filter(Age<50),
        col = "Renamed Legend") 
 ```
 
+It's pretty messy! At first glance, this plot uses an overwhelming number of colours, utilizes inconsistent font type, size, face and orientation, and has an overplotting problem.  Additionally, titles, axis labels, the legend title, caption, and subtitle could be improved to provide more information to the viewer. 
 
 ## 2.1 Summarize what is the role of arguments `plot.*`,`panel.*`,`axis.*`, and `legend.*`
 
@@ -252,12 +264,13 @@ ggplot(diab1 %>%  filter(Age<50),
 ## 2.2 Based on your interpretation of this bad plot, what research question do you think the plot-creators are trying to answer with this plot?
 
 **Research question I think they are trying to answer:** How do diabetes status and age influence the relationship between blood pressure and number of pregnancies in those under 50 years old?
-**Reasoning:** The authours of this graph are clearly interested in showing the relationship between blood pressure and number of pregnancies, as that is the main focus of each plot in this figure. Additionally, they want to look at how both age and diabetes status may influence this relationship, hence their facetting based on both of these variables. 
+
+**Reasoning:** The authours of this graph are clearly interested in showing the relationship between blood pressure and number of pregnancies, as that is the main focus of each panel in this figure. Additionally, they want to look at how both age and diabetes status may influence this relationship, hence their facetting based on both of these variables. 
 
 
 ## 2.3 Using the principles of effective visualization, correct the figure. Comment on the steps you took to improve the plot and explain your choice.
 
-Below is a numbered list of the changes I made to the original plot to create the new and improved plot above. To make these changes, I worked through the code from top to bottom, reflected on what each argument does, and decided whether making a change to such argument would result in a more effective visualization. 
+Below is a numbered list of the changes (and justifications) I made to the original plot to create a new and improved plot. To make these changes, I worked through the code from top to bottom, reflected on what each argument does, and decided whether making a change to such argument would result in a more effective visualization. 
 
 1. Reduce point size to reduce overlap (changed size from 5 to 3 in geom_point).
 2. Add transparency to the points to highlight dense (overplotted) areas in the plot (added alpha = 0.6 in geom_point) 
@@ -310,7 +323,7 @@ ggplot(diab1 %>%  filter(Age<50),
    
 ```
 
-I still felt that this plot could be better. First, I thought that the yellow background was unnecessary, and so I removed it entirely (deleted plot.background = element_rect(fill = "lightyellow"), and edited the legend.background and legend.key arguments to match the white). Second, I thought that the coloured points (by age_decade) and top facet labels (20, 30, and 40) were relaying the same information (i.e. redundant), so I decided to remove the facet label titles and keep the legend and colour to provide the information on age in a single way. I also thought that the diabetes status facet labels were too small, so I increased their text size using strip.text.y = element_text(). Additionally, I wanted to make this plot more accessible, so I decided to use colour blind friendly colours (i.e. I added the arguement scale_colour_manual(values = c("#E69F00", "#009E73", "#56B4E9")). Finally, I thought that it made more sense to have number of times pregnant on the x axis, and blood pressure on the y axis, so I used coord_flip() to do this (note this was just personal preference). 
+I still felt that this plot could be better. First, I thought that the yellow background was unnecessary, and so I removed it entirely (deleted plot.background = element_rect(fill = "lightyellow"), and edited the legend.background and legend.key arguments to match the white). Second, I thought that the coloured points (by age_decade) and top facet labels (20, 30, and 40) were relaying the same information (i.e. redundant), so I decided to remove the facet label titles and keep the legend and colour to provide the information on age in a single way. I also thought that the diabetes status facet labels were too small, so I increased their text size using strip.text.y = element_text(). Additionally, I wanted to make this plot more accessible, so I decided to use colour blind friendly colours (i.e. I added the arguement scale_colour_manual(values = c("#E69F00", "#009E73", "#56B4E9")). Finally, I thought that it made more sense to have number of times pregnant on the x axis, and blood pressure on the y axis, so I used coord_flip() to do this (this is because number of pregnancies is most likely to be considered the independent variable). 
 
 Here is the further improved plot: 
 
@@ -469,8 +482,11 @@ ethnicity <- read.csv("data/ethnicity_data.csv")
 glimpse(ethnicity)
 ```
 
+This data is very messy. The ID column looks great, there are single ID's identifying each respondent. The issue with this data is that the ethnicity column sometimes contains multiple selections. Additionally, the deliminators between multiple selections tends to vary (e.g. sometimes " ", sometimes ",", sometimes ", ".)
+
 Imagine you were tasked to present the data for the conference/board meeting to show the ethnic diversity of your patients.
 
+Lets try to clean up the data first...
 
 ## 4.1 Wrangling practice
 
@@ -497,9 +513,13 @@ Lets clean up the data and assign it to a new variable, ethnicityclean...
 
 ```{r exercise4.1}
 
+#calling the data and assigning it to a new variable
 ethnicityclean <- ethnicity %>% 
+   #creating a new column/variable (factor) containing 1's when individuals  
+   #identify with 'Indigenous (in Canada)' and 0's when not selected
    mutate('Indigenous (in Canada)' = factor(case_when(str_detect(Ethnicity, "Inuit") ~ "1", 
                                                            TRUE ~ "0"))) %>% 
+   #repeat for each ethnicity
    mutate('Indigenous (outside Canada)' = factor(case_when(str_detect(Ethnicity, "outside") ~ "1", 
                                                            TRUE ~ "0"))) %>% 
    mutate(Arab = factor(case_when(str_detect(Ethnicity, "Arab") ~ "1", 
@@ -535,11 +555,13 @@ glimpse(ethnicityclean)
 
 Lets get an idea of the number of people who have identified with each ethnicity group:
 
-```{r}
+```{r warning=FALSE}
 sumsethnicityclean <- ethnicityclean %>%
-    as.tibble() %>%
+    as_tibble() %>%
     summarise_all(funs(sum(.==1))) %>% 
-    pivot_longer(cols = "Indigenous (in Canada)":"Prefer not to answer", names_to = "ethnicity", values_to = "value") %>% 
+    pivot_longer(cols = "Indigenous (in Canada)":"Prefer not to answer", 
+                 names_to = "ethnicity", 
+                 values_to = "value") %>% 
     select(ethnicity, value)
 
 glimpse(sumsethnicityclean)
@@ -552,7 +574,7 @@ It looks like most individuals have identified with the ethnicity "Chinese". Thi
 
 Second, Try to create a visual to effectively show the diversity of patients' ethnicity. It can be either table or a figure. This task is not easy, so it is okey that your visual wont be perfect. Please discuss what aspects of your figure still needs improvement and describe or describe how you see the ideal images in this case.
 
-Did not have time to finish this...
+**Did not have time to finish this...**
 
 ```{r fig.height=10, fig.width=10}
 
