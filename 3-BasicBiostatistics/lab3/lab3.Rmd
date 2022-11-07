@@ -74,7 +74,7 @@ bone density in the elderly?
 How do changes in human behaviour lead to a reduction in the number of
 COVID-19 confirmed cases?
 
-> Mechanistic???
+> Mechanistic
 
 ### Exercise 1.5:
 
@@ -135,8 +135,11 @@ miscarriages in in-vitro fertilization (IVF) patients whose embryos
 undergoe preimplantation genetic testing for aneuploidy (PGT) compared
 to those whose embryos do not?
 
-> Question Type: Inferential
-> Justification: This question suggests that the results of the analysis will be generalized to all individuals who undergo IVF. For this reason this question can be considered an inferential statistical question - it goes beyond the population from which the data was generated.                                            
+> Question Type: Inferential Justification: This question suggests that
+> the results of the analysis will be generalized to all individuals who
+> undergo IVF. For this reason this question can be considered an
+> inferential statistical question - it goes beyond the population from
+> which the data was generated.
 
 **Data set:** Data from 457 patients was collected from the a local
 fertility clinic. Patients had the choice of opting for PGT or not.
@@ -156,8 +159,12 @@ below:
 | ...          | ...                      | ...   |
 | 2595244      | 1                        | yes   |
 
-> Analysis Method: A method to compare two proportions - z-test, or Chi-square test. 
-> Justification: Here, the researchers are trying to compare the *proportion* of miscarriages experienced by two groups. When comparing *proportions*, we can use one of the two methods above, however their assumptions differ. 
+> Analysis Method: A method to compare two proportions - z-test/proportion-test, or
+Chi-square test. 
+> Justification: Here, the researchers are trying to
+compare the *proportion* of miscarriages experienced by two groups.
+When comparing *proportions*, we can use one of the two methods above,
+however their assumptions differ.
 
 
 
@@ -187,11 +194,8 @@ those point estimates at a 95% confidence interval.
 
 ```{r, fig.width = 6, fig.height = 5}
 
-#load the data
-jiang_live_birth <- read.csv("data/jiang-live-birth.csv") 
-
-#a look at the data, as imported
-jiang_live_birth 
+#load the data and look at it!
+(jiang_live_birth <- read.csv("data/jiang-live-birth.csv"))
 
 #creating new data frame displaying the number of live birth 
 #successes, total attempts, and proportion of successes for each group
@@ -203,9 +207,11 @@ jiang_live_birth
 #95% confidence interval for each group
 confidence <- binom.confint(jiang_live_birth1$live_births, jiang_live_birth1$total, conf.level = 0.95, methods = "exact") 
 
-#binding column to jiang_live_birth_1
+#binding confidence interval upper and lowers to jiang_live_birth_1
+#and creating final data frame for plotting, jiang_live_birth_final
 jiang_live_birth_final <- cbind(jiang_live_birth1, confidence$lower, confidence$upper)
 
+#renaming columns in jiang_live_birth_final
 (jiang_live_birth_final <- jiang_live_birth_final %>% rename(lower = 'confidence$lower', upper = 'confidence$upper'))
 
 #plotting proportions of live births in each group
@@ -213,20 +219,16 @@ jiang_live_birth_final %>%
 ggplot(aes(x = group, y = prop)) +
   geom_col() +
   geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
-  labs(title = "The Proportion of Live Birth Successes in each Progesterone Supplementation Method Group",
+  labs(title = "The Average Proportion of Live Birth Successes in each Progesterone Supplementation Method Group",
        x = "Progesterone Supplementation Method", 
-       y = "Proportion of Live Birth Successes")
-
-
-
-### NOT DONE ###
-  
-
+       y = "Proportion of Live Birth Successes") +
+  theme_classic()
 
 ```
 
-
-
+The above figure displays the proportion of live birth successes in each
+progesterone supplementation groups, and the uncertainty of these
+estimates point estimates using 95% confidence interval error bars.
 
 ## Exercise 4: using R to infer group differences
 
