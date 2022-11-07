@@ -284,7 +284,7 @@ Below is a numbered list of the changes I made to the original plot to create th
 10. Re-formated the axis text (i.e. the numbers). Here, I decided that the italic font was irrelevant and distracting, and reverted back to normal face by removing the face argument within axis.text = element_text(). I also re-sized the axis text to size 12 within the same argument, as I felt size 14 was far too large. Finally, I removed the argument axis.text.x.bottom = element_text(angle = 180), because a flip in the x axis labels was unnecessary complexity. 
 11. Cleaned up the legend (first, I made the background of the legend match the background of the overall plot background to prevent excessive use of distracting colour. I decided that it would be beneficial to add a simple black border to the legend to make it appear organized. Both of these changes were made in the legend.background = element_rect() argument. Second, I removed the argument legend.key = element_rect, as i felt it wasn't contributing to the visualization, but rather hindering the viewers ability to understand the legend.)
 
-
+^^^^ edits needed to 11
 
 
 
