@@ -237,29 +237,27 @@ ggplot(diab1 %>%  filter(Age<50),
 # Modified Plot 
 ggplot(diab1 %>%  filter(Age<50), 
        mapping = aes(x = BloodPressure, y = Pregnancies, col = age_decade)) + 
-  geom_point(size = 3, alpha = 0.7) + 
+  geom_point(size = 3, alpha = 0.6) + 
   facet_grid(Outcome ~ age_decade) +
   theme(
     plot.background = element_rect(fill = "lightyellow"),
     plot.title = element_text(size = 25, hjust = 0.5),
     plot.caption = element_text(size = 10, face = "italic"),
     
-    ##########STOPPED MAKING EDITS HERE...############################
+    panel.background = element_rect(fill = 'white', colour = 'black', size = 2),
+    panel.grid.major.x = element_line(color = "grey", linetype = 3),
+    panel.grid.major.y = element_line(colour = "grey", linetype = 3),
     
-    panel.background = element_rect(fill = 'lightblue', colour = 'darkred', size = 4),
-    panel.border = element_rect(fill = NA, color = "green", size = 2),
-    panel.grid.major.x = element_line(color = "purple", linetype = 2),
-    panel.grid.minor.y = element_blank(),
-    
-    axis.title.x = element_text(face = "bold.italic", color = "blue"),
-    axis.title.y = element_text(family = "mono", face = "bold", size = 20, hjust = 0.25),
-    axis.text = element_text(face = "italic", size = 15),
-    # note that axis.text options from above are inherited
-    axis.text.x.bottom = element_text(angle = 180), 
+    axis.title.x = element_text(size = 16, hjust = 0.5),
+    axis.title.y = element_text(size = 16, hjust = 0.5),
+    axis.text = element_text(size = 12),
     
     # generally will want to match w plot background
-    legend.background = element_rect(fill = "orangered4"), 
-    legend.key = element_rect(fill = "orange"),
+    legend.background = element_rect(fill = "lightyellow", colour = "black"), 
+    legend.key = element_rect(fill = "lightyellow"),
+    
+    ###### STOPPED HERE ##########
+    
     legend.direction = "horizontal",
     legend.position = "bottom") +
   
@@ -272,14 +270,21 @@ ggplot(diab1 %>%  filter(Age<50),
    
 ```
 
-Below is a numbered list of the changes I made to the original plot, to create the new an improved plot above. To make these changes, I worked through the code from top to bottom, reflecting on what each argument does whether making a change to such argument would result in a more effective visualization. 
+Below is a numbered list of the changes I made to the original plot to create the new and improved plot above. To make these changes, I worked through the code from top to bottom, reflected on what each argument does, and decided whether making a change to such argument would result in a more effective visualization. 
 
 1. Reduce point size to reduce overlap (changed size from 5 to 3 in geom_point).
-2. Add transparency to the points to highlight dense areas in the plot (added alpha = 0.5 in geom_point) 
+2. Add transparency to the points to highlight dense areas in the plot (added alpha = 0.6 in geom_point) 
 3. Moved Outcome facet labels back to the default (right) side to prevent cluttering of the y-axis scale on the left size (removed switch = "y" from facet_grid)
 4. Centered the main plot title and resized its text (changed the plot.title = element_text() arguments from size = 30 to 25 and hjust=0.25 to 0.5)
 5. Removed the awkward angle on the plot caption (removed angle argument from plot.caption = element_text())
-6. 
+6. Removed the blue background and replaced it with white to improve contrast between background and plotted points (changed panel.background = element_rect() fill to white)
+7. Cleaned up the border around each panel (first, I removed the argument panel.border to eliminate the distracting green border. Second, I recoloured and resized the panel background outline by editing the argument panel.background = element_rect() - changed the colour from maroon to black, and decreased the size from 4 to 2.)
+8. Cleaned up the panel grid lines (first, I removed the panel.grid.minor.y argument, as it wasn't actually contributing to the plot due to the element_blank (because no preset theme is used in this plot, we need to specify every part of the plot for it to exist!). I replaced this with a more appropriate panel.grid.major.y argument (as this argument will produce grid lines that line up with axis labels). I made both panel.grid.major arguments match for a clean looking plot - faint grid line types in grey colour (rather than the original and random purple). In my opinion, grid lines are very valuable to understanding relative measurements represented by points.
+9. Fixed the axis titles by editing axis.title.* argument (specifically, I made the axis titles match in style and size, and used the default, professional looking font and black colour).
+10. Re-formated the axis text (i.e. the numbers). Here, I decided that the italic font was irrelevant and distracting, and reverted back to normal face by removing the face argument within axis.text = element_text(). I also re-sized the axis text to size 12 within the same argument, as I felt size 14 was far too large. Finally, I removed the argument axis.text.x.bottom = element_text(angle = 180), because a flip in the x axis labels was unnecessary complexity. 
+11. Cleaned up the legend (first, I made the background of the legend match the background of the overall plot background to prevent excessive use of distracting colour. I decided that it would be beneficial to add a simple black border to the legend to make it appear organized. Both of these changes were made in the legend.background = element_rect() argument. Second, I removed the argument legend.key = element_rect, as i felt it wasn't contributing to the visualization, but rather hindering the viewers ability to understand the legend.)
+
+
 
 
 
