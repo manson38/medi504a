@@ -42,6 +42,7 @@ First import the dataset into the workspace:
 # import the dataset into the workspace
 diab<-read.csv("data/diabetes.csv") # It reads the CSV file and assigns to diab object
 head(diab)
+range(diab$Age)
 ```
 
 Please use the code chunk below to perform any modifications to original dataset.
@@ -52,21 +53,19 @@ diab1 <- diab %>%
                                     TRUE ~ "Diabetes-Negative"),
                                     levels = c('Diabetes-Negative', 'Diabetes-Positive'))) %>% 
   # creating a decade based age category variable, using case when to define the boundaries of the categories
-  mutate(age_decade = factor(case_when(Age < 20 ~ "10",
-                                   Age < 30 ~ "20",
+  mutate(age_decade = factor(case_when(Age < 30 ~ "20",
                                    Age < 40 ~ "30",
                                    Age < 50 ~ "40",
                                    Age < 60 ~ "50",
                                    Age < 70 ~ "60",
                                    Age < 80 ~ "70",
                                    Age < 90 ~ "80",
-                                   Age < 100 ~ "90",
-                                   TRUE ~ "100+"))) 
+                                   TRUE ~ "90+"))) 
   
 ```
 
 
-Let's confirm the levels of our two new categorical variables... note: only levels with observations appear. 
+Let's confirm the levels of the two new categorical variables... 
 
 ```{r}
 levels(diab1$Outcome)
@@ -129,22 +128,22 @@ Looks good!
 p1_3_1 <- diab1 %>%  
   ggplot(aes(x = BMI, y = Insulin, color = Outcome)) + 
   geom_point(show.legend = FALSE) + 
-  facet_wrap(. ~ Outcome) +
-  geom_smooth(method = "lm", show.legend = FALSE) +
-  scale_color_manual(values = c("#4287f5","#f2d563")) +
-  labs(x = "BMI", y = "2-Hour serum insulin (µU/mL)") +
+  facet_wrap(. ~ Outcome) + # wrapping based on diabetes status
+  geom_smooth(method = "lm", show.legend = FALSE) + #adding linear model visualization
+  scale_color_manual(values = c("#4287f5","#f2d563")) + #manually assigning colours
+  labs(x = "BMI", y = "2-Hour serum insulin (µU/mL)") + #custom axis labels
   theme_classic() + 
-  theme(strip.background = element_rect(fill="grey", colour = NA), text = element_text(size = 20))  
+  theme(strip.background = element_rect(fill="grey", colour = NA), text = element_text(size = 20))  #customizing facet labels to match!
 
-# creating plots of serum pregnancies against age, facetted bt diabetes outcome
+# creating plot of serum pregnancies against age, facetted by diabetes outcome
 p1_3_2 <- diab1 %>% 
   ggplot(aes(x = age_decade, y = Pregnancies, fill = Outcome)) + 
-  geom_boxplot(show.legend = FALSE) +
+  geom_boxplot(show.legend = FALSE) + #boxplot!
   facet_wrap(. ~ Outcome) +
-  scale_fill_manual(values = c("#4287f5","#f2d563")) +
-  labs(x = "Age (decade)", y = "Pregnancies") +
+  scale_fill_manual(values = c("#4287f5","#f2d563")) + #custom colours, matching above
+  labs(x = "Age (decade)", y = "Pregnancies") + 
   theme_classic() +
-  theme(strip.text = element_blank(), text = element_text(size = 20))
+  theme(strip.text = element_blank(), text = element_text(size = 20)) #removing facet label, as they will be portrayed when stacked by above^
   
 # using plot_grid function to stack the above plots in one column
 answer1.3 <- plot_grid(p1_3_1, p1_3_2, ncol = 1)
@@ -166,6 +165,7 @@ Just as a reminder, refer to the principles of effective visualizations when com
 ![](figures/lab2-file_insertimage_0.png)
 
 Let's look at this plot:
+
 ```{r fig.height=6, fig.width=10}
 # Plot
 ggplot(diab1 %>%  filter(Age<50), 
@@ -234,6 +234,7 @@ ggplot(diab1 %>%  filter(Age<50),
 ## 2.2 Based on your interpretation of this bad plot, what research question do you think the plot-creators are trying to answer with this plot?
 
 **Research question I think they are trying to answer:** How do diabetes status and age influence the relationship between blood pressure and number of pregnancies in those under 50 years old?
+**Reasoning:** The authours of this graph are clearly interested in showing the relationship between blood pressure and number of pregnancies, as that is the main focus of each plot in this figure. Additionally, they want to look at how both age and diabetes status may influence this relationship, hence their facetting based on both of these variables. 
 
 
 ## 2.3 Using the principles of effective visualization, correct the figure. Comment on the steps you took to improve the plot and explain your choice.
@@ -243,16 +244,16 @@ Below is a numbered list of the changes I made to the original plot to create th
 1. Reduce point size to reduce overlap (changed size from 5 to 3 in geom_point).
 2. Add transparency to the points to highlight dense (overplotted) areas in the plot (added alpha = 0.6 in geom_point) 
 3. Moved Outcome facet labels back to the default (right) side to prevent cluttering of the y-axis scale on the left size (removed switch = "y" from facet_grid)
-4. Centered the main plot title and resized its text (changed the plot.title = element_text() arguments from size = 30 to 25 and hjust=0.25 to 0.5)
-5. Centered the plot subtitle (added plot.subtitle = element_text() hjust = 0.5)
+4. Centered the main plot title and resized its text to make plot more visually appealing (changed the plot.title = element_text() arguments from size = 30 to 25 and hjust=0.25 to 0.5)
+5. Centered the plot subtitle to match the main title (added plot.subtitle = element_text() hjust = 0.5)
 6. Removed the awkward angle on the plot caption (removed angle argument from plot.caption = element_text())
 7. Removed the blue background and replaced it with white to improve contrast between background and plotted points (changed panel.background = element_rect() fill to white)
-8. Cleaned up the border around each panel (first, I removed the argument panel.border to eliminate the distracting green border. Second, I recoloured and resized the panel background outline by editing the argument panel.background = element_rect() - changed the colour from maroon to black, and decreased the size from 4 to 2.)
-9. Cleaned up the panel grid lines (first, I removed the panel.grid.minor.y argument, as it wasn't actually contributing to the plot due to the element_blank (because no preset theme is used in this plot, we need to specify every part of the plot for it to exist!). I replaced this with a more appropriate panel.grid.major.y argument (as this argument will produce grid lines that line up with axis labels). I made both panel.grid.major arguments match for a clean looking plot - faint grid line types in grey colour (rather than the original and random purple). In my opinion, grid lines are very valuable to understanding relative measurements represented by points.
-10. Fixed the axis titles by editing axis.title.* argument (specifically, I made the axis titles match in style and size, and used the default, professional looking font and black colour).
-11. Re-formated the axis text (i.e. the numbers). Here, I decided that the italic font was irrelevant and distracting, and reverted back to normal face by removing the face argument within axis.text = element_text(). I also re-sized the axis text to size 12 within the same argument, as I felt size 14 was far too large. Finally, I removed the argument axis.text.x.bottom = element_text(angle = 180), because a flip in the x axis labels was unnecessary complexity. 
-12. Cleaned up the legend (first, I made the background of the legend match the background of the overall plot background to prevent excessive use of distracting colour (previously maroon coloured). I decided that it would be beneficial to add a simple black border to the legend to make it appear organized. Both of these changes were made in the legend.background = element_rect() argument. Second, I utilized the argument legend.key = element_rect() to match the legend key backgrounds to the plot background, to make the legend more simple and clear.)
-13. Finally, I made changes in the labs() argument to better describe the plot and provide the relevant information to the viewer. Specifically, I rewrote the title using scientific plot title guidelines found online, provided a detailed subtitle explaining the facetting that takes place in this plot, and renamed the legend more appropriately.
+8. Cleaned up the border around each panel to prevent distraction (first, I removed the argument panel.border to eliminate the distracting green border. Second, I recoloured and resized the panel background outline by editing the argument panel.background = element_rect() - changed the colour from maroon to black, and decreased the size from 4 to 2.)
+9. Cleaned up the panel grid lines to support understanding of the graph, not distract the viewer (first, I removed the panel.grid.minor.y argument, as it wasn't actually contributing to the plot due to the element_blank (because no preset theme is used in this plot, we need to specify every part of the plot for it to exist!). I replaced this with a more appropriate panel.grid.major.y argument (as this argument will produce grid lines that line up with axis labels). I made both panel.grid.major arguments match for a clean looking plot - faint grid line types in grey colour (rather than the original and random purple). In my opinion, grid lines are very valuable to understanding relative measurements represented by points.
+10. Fixed the axis title design by editing axis.title.* argument (specifically, I made the axis titles match in style and size, and used the default, professional looking font and black colour).
+11. Re-formated the axis text (i.e. the numbers). Here, I decided that the italic font was unnecessary and distracting, and reverted back to normal face by removing the face argument within axis.text = element_text(). I also re-sized the axis text to size 12 within the same argument, as I felt size 14 was far too large. Finally, I removed the argument axis.text.x.bottom = element_text(angle = 180), because a flip in the x axis labels was unnecessary complexity and made the x axis text hard to read. 
+12. Cleaned up the legend (first, I made the background of the legend match the background of the overall plot background to prevent excessive use of distracting colour (previously maroon coloured). I also decided that it would be beneficial to add a simple black border to the legend to make it appear as an organized and distinct component of the plot. Both of these changes were made in the legend.background = element_rect() argument. Second, I utilized the argument legend.key = element_rect() to match the legend key backgrounds to the plot background, to make the legend more simple and clear). 
+13. I made changes in the labs() argument to better describe the plot and provide the relevant information to the viewer. Specifically, I rewrote the title to avoid using 'vs' (which I feel is informal), provided a detailed subtitle explaining the facetting that takes place in this plot, and renamed the legend more appropriately.
 14. The caption was not contributing anything to the viewer's understanding of the plot at this point, so I decided to remove it from the plot entirely. This included removing 1) the plot.caption argument, and 2) the caption subargument within the labs argument. 
 
 
@@ -329,7 +330,7 @@ ggplot(diab1 %>%  filter(Age<50),
        y = "Number of Times Pregnant",
        col = "Age (by decade)") +
   
-    coord_flip()
+  coord_flip()
 ```
 
 This plot follows the principles for effective visualizations. It respects the principle of proportional ink, has a realistic data:ink ratio, has and informative and concise title, labels, and legend, handles overplotting well with point size and alpha transparency, uses an effective plot for conveying the intended information, and is accessible! Most important of all, it is conceptually uniform and visually pleasing. 
@@ -498,12 +499,14 @@ ethnicityclean
 ```
 
 
+Did not have time to finish below...
+
 ## 4.2 Visualization Practice
 
 Second, Try to create a visual to effectively show the diversity of patients' ethnicity. It can be either table or a figure. This task is not easy, so it is okey that your visual wont be perfect. Please discuss what aspects of your figure still needs improvement and describe or describe how you see the ideal images in this case.
+
 ```{r fig.height=10, fig.width=10}
 # loaded extra libraries
-
 
 ```
 
