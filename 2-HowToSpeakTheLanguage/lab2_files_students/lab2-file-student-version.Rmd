@@ -1,9 +1,10 @@
 ---
 title: "MEDI 504 - Lab 2"
-author: "Instructor's Version"
+author: "Matthew Manson"
 output:
+  html_document:
+    df_print: paged
   pdf_document: default
-
 ---
 ```{r include=FALSE}
 knitr::opts_chunk$set(echo=TRUE)
@@ -61,7 +62,6 @@ diab1 <- diab %>%
                                    Age < 80 ~ "70",
                                    Age < 90 ~ "80",
                                    TRUE ~ "90+"))) 
-  
 ```
 
 
@@ -96,7 +96,8 @@ diab1 %>%
   geom_boxplot(width = 0.15, show.legend = FALSE, alpha = 0.8) + # using width modification to prevent boxplot from overwhelming the violin
   labs(x = "Test Results for Diabetes", y = "BMI") + 
   scale_fill_manual(values=c("#4287f5","#f2d563")) + #scale_fill_manual is used to manually set the colours, assigned in order to Outcomes
-  theme_classic()
+  theme_classic() +
+  theme(axis.title = element_text(size = 16))
 ```
 
 Looks good!
@@ -133,7 +134,7 @@ p1_3_1 <- diab1 %>%
   scale_color_manual(values = c("#4287f5","#f2d563")) + #manually assigning colours
   labs(x = "BMI", y = "2-Hour serum insulin (µU/mL)") + #custom axis labels
   theme_classic() + 
-  theme(strip.background = element_rect(fill="grey", colour = NA), text = element_text(size = 20))  #customizing facet labels to match!
+  theme(strip.background = element_rect(fill="grey", colour = NA), text = element_text(size = 14))  #customizing facet labels to match!
 
 # creating plot of serum pregnancies against age, facetted by diabetes outcome
 p1_3_2 <- diab1 %>% 
@@ -143,7 +144,7 @@ p1_3_2 <- diab1 %>%
   scale_fill_manual(values = c("#4287f5","#f2d563")) + #custom colours, matching above
   labs(x = "Age (decade)", y = "Pregnancies") + 
   theme_classic() +
-  theme(strip.text = element_blank(), text = element_text(size = 20)) #removing facet label, as they will be portrayed when stacked by above^
+  theme(strip.text = element_blank(), text = element_text(size = 14)) #removing facet label, as they will be portrayed when stacked by above^
   
 # using plot_grid function to stack the above plots in one column
 answer1.3 <- plot_grid(p1_3_1, p1_3_2, ncol = 1)
@@ -244,7 +245,7 @@ Below is a numbered list of the changes I made to the original plot to create th
 1. Reduce point size to reduce overlap (changed size from 5 to 3 in geom_point).
 2. Add transparency to the points to highlight dense (overplotted) areas in the plot (added alpha = 0.6 in geom_point) 
 3. Moved Outcome facet labels back to the default (right) side to prevent cluttering of the y-axis scale on the left size (removed switch = "y" from facet_grid)
-4. Centered the main plot title and resized its text to make plot more visually appealing (changed the plot.title = element_text() arguments from size = 30 to 25 and hjust=0.25 to 0.5)
+4. Centered the main plot title and resized its text to make plot more visually appealing (changed the plot.title = element_text() arguments from size = 30 to 20 and hjust=0.25 to 0.5)
 5. Centered the plot subtitle to match the main title (added plot.subtitle = element_text() hjust = 0.5)
 6. Removed the awkward angle on the plot caption (removed angle argument from plot.caption = element_text())
 7. Removed the blue background and replaced it with white to improve contrast between background and plotted points (changed panel.background = element_rect() fill to white)
@@ -259,7 +260,7 @@ Below is a numbered list of the changes I made to the original plot to create th
 
 After making all of the above changes, I ended up with the following plot:
 
-```{r exercise2.3,  fig.height=6, fig.width=10}
+```{r exercise2.3.1,  fig.height=6, fig.width=10}
 # Modified Plot 
 ggplot(diab1 %>%  filter(Age<50), 
        mapping = aes(x = BloodPressure, y = Pregnancies, col = age_decade)) + 
@@ -267,7 +268,7 @@ ggplot(diab1 %>%  filter(Age<50),
   facet_grid(Outcome ~ age_decade) +
   theme(
     plot.background = element_rect(fill = "lightyellow"),
-    plot.title = element_text(size = 25, hjust = 0.5),
+    plot.title = element_text(size = 20, hjust = 0.5),
     plot.subtitle = element_text(hjust = 0.5),
     
     panel.background = element_rect(fill = 'white', colour = 'black', size = 2),
@@ -296,7 +297,7 @@ I still felt that this plot could be better. First, I thought that the yellow ba
 
 Here is the further improved plot: 
 
-```{r exercise2.3,  fig.height=6, fig.width=10}
+```{r exercise2.3.2,  fig.height=6, fig.width=10}
 # FINAL Modified Plot 
 ggplot(diab1 %>%  filter(Age<50), 
        mapping = aes(x = BloodPressure, y = Pregnancies, col = age_decade)) + 
@@ -304,7 +305,7 @@ ggplot(diab1 %>%  filter(Age<50),
   facet_grid(Outcome ~ age_decade) +
   scale_colour_manual(values = c("#E69F00", "#009E73", "#56B4E9")) +
   theme(
-    plot.title = element_text(size = 25, hjust = 0.5),
+    plot.title = element_text(size = 20, hjust = 0.5),
     plot.subtitle = element_text(hjust = 0.5),
     
     panel.background = element_rect(fill = 'white', colour = 'black', size = 2),
