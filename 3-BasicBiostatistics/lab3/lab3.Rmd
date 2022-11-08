@@ -164,7 +164,7 @@ Chi-square test.
 > Justification: Here, the researchers are trying to
 compare the *proportion* of miscarriages experienced by two groups.
 When comparing *proportions*, we can use one of the two methods above,
-however their assumptions differ.
+however their assumptions differ. 
 
 
 
@@ -205,7 +205,7 @@ those point estimates at a 95% confidence interval.
   mutate(prop = live_births/total))
 
 #95% confidence interval for each group
-confidence <- binom.confint(jiang_live_birth1$live_births, jiang_live_birth1$total, conf.level = 0.95, methods = "exact") 
+(confidence <- binom.confint(jiang_live_birth1$live_births, jiang_live_birth1$total, conf.level = 0.95, methods = "exact"))
 
 #binding confidence interval upper and lowers to jiang_live_birth_1
 #and creating final data frame for plotting, jiang_live_birth_final
@@ -228,7 +228,10 @@ ggplot(aes(x = group, y = prop)) +
 
 The above figure displays the proportion of live birth successes in each
 progesterone supplementation groups, and the uncertainty of these
-estimates point estimates using 95% confidence interval error bars.
+point estimates using 95% confidence interval error bars.
+
+
+
 
 ## Exercise 4: using R to infer group differences
 
@@ -241,13 +244,28 @@ statistically significant. Perform a suitable analysis to answer this
 question. If any hypotheses or assumptions are made in your analysis,
 state them. Clearly communicate your results.
 
+To summarise, so far, I have:
+1. imported the data on live births in two groups (those recieving IM and Intravaginal Progesterone Supplements), 
+2. looked at the dataset and calculated the proportion of live births within each group.
+3. calculated the 95% confidence interval for the two point estimates (i.e. the proportion of live births in each group)
+4. plotted the proportion of live births in each supplementation group with error bars corresponding to the 95% confidence intervals of the point estimates. 
+
+Now I need to perform an analysis to determine whether the difference in point estimates is statistically significant. Lets do this. I can use prop.test, a function that tests the null hypothesis that the proportions of success is equal across groups. 
+
 ```{r}
 # Your code goes here
 
 #p value alone is no enough - effect size, confidence interval, etc. 
 
+#proportion test - produces p-value and confidence interval
+  prop.test(jiang_live_birth_final$live_births, 
+            jiang_live_birth_final$total)
+
+
 
 ```
+
+The results of the proportion test suggest that there is a difference in the proportion of live birth successes between the two groups recieving different progesterone supplementation methods (p = 0.031). The 95% confidence interval for the difference in proportions is (-0.0799, -0.0037), suggesting a very minor difference, but higher birth success for those recieving vaginal supplementation. 
 
 > Your answer goes here.
 
