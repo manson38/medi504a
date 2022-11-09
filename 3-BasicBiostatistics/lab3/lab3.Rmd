@@ -277,9 +277,6 @@ proportions of success are equal across groups, to test the hypothesis outlined 
             alternative = "two.sided", 
             conf.level = 0.95)
 
-#effect size
-  ES.h(jiang_live_birth_final[1, 4], jiang_live_birth_final[2, 4]) ### interpret???
-
 ```
 
 The results of the proportion test suggest that there is a statistically clear
@@ -289,9 +286,21 @@ observed groups receiving different progesterone supplementation methods (p =
 (-0.0799, -0.0037), suggesting a very minor but statistically clear higher proportion of
 birth successes for those receiving vaginal supplementation (does not cross zero, so we can be somewhat confident a difference exists. 
 
-The question remains, just how large is the difference we observe? what is its effect size?
+The question remains, just how large is the difference we observe? The confidence interval suggests that it is quite small, and a small difference is likely to have little meaning in clinical practice. Effect size calculations can also help to quantify this. I'll calculate Cohen's h, a way of quantifying the difference between proportions that can be used to classify the difference as small, moderate, or large. To do so, i'll use the function `ES.h()` from the package pwr. 
 
-> Your answer goes here.
+```{r}
+
+#effect size
+  ES.h(jiang_live_birth_final[1, 4], jiang_live_birth_final[2, 4]) ### interpret???
+
+```
+
+The calculated Cohen's h value is ~ -0.085. Cohen provides criteria for interpreting this number. An effect size of h = 0.2 is "small", h = 0.5 is "medium", and h = 0.8 is "large". Note that interpreting this value requires consideration of the absolute value (i.e. ignore the sign), although the sign does indicate the direction of the effect, and in this case suggests that IM injections tend to have less live birth success. The Cohen's h value in this case is very small, suggesting that the effect of this difference would likely not be clinically meaningful. 
+
+For Jiang et al., the results of this analysis suggest that, although there was a statistically clear difference in the proportion of live birth successes across each group, this difference is extremely small and unlikely to be meaningful in clinical practice. For patients undergoing IVF, this analysis suggests that there is likely to be minimal clinically meaningful difference in the live birth success based on the method of progesterone supplementation, and because the vaginal method offers places less burden on patients, it may be the better approach. 
+
+
+
 
 ## (Optional) Exercise 5: using R to handle multiple comparisons
 
@@ -340,11 +349,20 @@ Answer the following questions
     the unadjusted $\alpha = 0.05$?
 
 ```{r}
-# Your code goes here
+#number of genes in the dataset:
+  n_distinct(GWAS_results$gene)
+
+#number of genes associated with the phenotype:
+  GWAS_results %>% 
+    filter(pval <= 0.05) %>% 
+    count()
 
 ```
 
-> Your answer goes here.
+There are 1150 genes in the dataset. 100 genes are associated with the phenotype, if alpha = 0.05 if consider the threshold. 
+
+
+
 
 ## (Optional) Exercise 5.2:
 
