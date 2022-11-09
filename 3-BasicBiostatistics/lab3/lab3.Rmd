@@ -117,9 +117,6 @@ the visually impaired?
 
 > Inferential
 
-
-
-
 ## Exercise 2: identifying a suitable analysis method for a given question and data set
 
 rubric={10 points}
@@ -135,13 +132,13 @@ miscarriages in in-vitro fertilization (IVF) patients whose embryos
 undergoe preimplantation genetic testing for aneuploidy (PGT) compared
 to those whose embryos do not?
 
-**Question Type**: Inferential 
+*Question Type*: Inferential
 
-**Justification**: This question suggests that
-the results of the analysis of data from a sample of those who undergo IVF will be generalized to all individuals who
-undergo IVF. For this reason this question can be considered an
-inferential statistical question - it aims to make statements beyond the population from
-which the data was generated.
+*Justification*: This question suggests that the results of the analysis
+of data from a sample of those who undergo IVF will be generalized to
+all individuals who undergo IVF. For this reason this question can be
+considered an inferential statistical question - it aims to make
+statements beyond the population from which the data was generated.
 
 **Data set:** Data from 457 patients was collected from the a local
 fertility clinic. Patients had the choice of opting for PGT or not.
@@ -161,16 +158,15 @@ below:
 | ...          | ...                      | ...   |
 | 2595244      | 1                        | yes   |
 
-**Analysis Method**: A method to compare two proportions - z-test/proportion-test, or
-Chi-square test. 
+*Analysis Method*: A method to compare two proportions -
+z-test/proportion-test (in R - `prop.test()`), or Chi-square test.
 
-**Justification**: Here, the researchers are trying to
-compare the *proportion* of miscarriages experienced by two groups.
-When comparing *proportions*, we can use one of the two methods above,
-however their assumptions differ. 
-
-
-
+*Justification*: Here, the researchers are trying to compare the
+*proportion* of miscarriages experienced by two groups. When comparing
+*proportions*, we can use one of the two methods above, however their
+assumptions differ. I would use the function prop.test(), as it is
+specifically designed for this case (i.e. the documentation specifies it
+is used for testing the null hypothesis that proportions are the same)
 
 ## Exercise 3: using R to visualize uncertainty of point estimates
 
@@ -212,29 +208,27 @@ those point estimates at a 95% confidence interval.
 
 #binding confidence interval upper and lowers to jiang_live_birth_1
 #and creating final data frame for plotting, jiang_live_birth_final
-jiang_live_birth_final <- cbind(jiang_live_birth1, confidence$lower, confidence$upper)
-
-#renaming columns in jiang_live_birth_final
-(jiang_live_birth_final <- jiang_live_birth_final %>% rename(lower = 'confidence$lower', upper = 'confidence$upper'))
+(jiang_live_birth_plot <- cbind(jiang_live_birth1, confidence$lower, confidence$upper) %>% 
+                           #rename columns
+                           rename(conf_lower = 'confidence$lower', conf_upper = 'confidence$upper'))
 
 #plotting proportions of live births in each group
-jiang_live_birth_final %>% 
+jiang_live_birth_plot %>% 
 ggplot(aes(x = group, y = prop)) +
-  geom_col() +
-  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
-  labs(title = "The Average Proportion of Live Birth Successes in each Progesterone Supplementation Method Group",
+  geom_col(aes(fill = group), show.legend = FALSE) +
+  #adding 95% CI error bars, custom width
+  geom_errorbar(aes(ymin = conf_lower, ymax = conf_upper), width = 0.2) +
+  labs(title = "The Average Proportion of Live Birth Successes in Two Progesterone Supplementation Method\nGroups for those Undergoing Frozen-thawed Embryo Transfer During In-vitro Fertilization (IVF)",
        x = "Progesterone Supplementation Method", 
        y = "Proportion of Live Birth Successes") +
+  scale_fill_manual(values = c("#009E73", "#56B4E9")) +
   theme_classic()
 
 ```
 
 The above figure displays the proportion of live birth successes in each
-progesterone supplementation groups, and the uncertainty of these
-point estimates using 95% confidence interval error bars.
-
-
-
+progesterone supplementation group, and the uncertainty of these point
+estimates using 95% confidence interval error bars.
 
 ## Exercise 4: using R to infer group differences
 
@@ -247,13 +241,31 @@ statistically significant. Perform a suitable analysis to answer this
 question. If any hypotheses or assumptions are made in your analysis,
 state them. Clearly communicate your results.
 
-To summarise, so far, I have:
-1. imported the data on live births in two groups (those recieving IM and Intravaginal Progesterone Supplements), 
-2. looked at the dataset and calculated the proportion of live births within each group.
-3. calculated the 95% confidence interval for the two point estimates (i.e. the proportion of live births in each group)
-4. plotted the proportion of live births in each supplementation group with error bars corresponding to the 95% confidence intervals of the point estimates. 
+To summarise, so far, I have: 
+1. imported the data on live births in two
+groups (those receiving IM and Intravaginal Progesterone Supplements),
+2. looked at the data set and calculated the proportion of live births
+within each group. 
+3. calculated the 95% confidence interval for the two
+point estimates (i.e. the proportion of live births in each group) 
+4. plotted the proportion of live births in each supplementation group with
+error bars corresponding to the 95% confidence intervals of the point
+estimates.
 
-Now I need to perform an analysis to determine whether the difference in point estimates is statistically significant. Lets do this. I can use prop.test, a function that tests the null hypothesis that the proportions of success is equal across groups. 
+Now I need to perform an analysis to determine whether the difference in
+point estimates is statistically significant. Lets do this. 
+
+*Question*: Is there a difference between the proportion of live birth successes among those who recieve intramuscular progesterone supplementation (group A, proportion A, pA) and the those who receive progesterone vaginally (group B, proportion B - pB) while undergoing frozen-thawed embryo transfer during in-vitro fertilization (IVF)?
+
+*Null Hypothesis*: The observed proportion of live birth successes in group A (intramuscular progesterone supplementation) is equal to the observed proportion of live birth successes in group B (vaginal progesterone supplementation). (pA = pB)
+
+*Alternative Hypothesis*: The observed proportion of live birth successes in group B (intramuscular progesterone supplementation) is different than the observed proportion of live birth successes in group B (vaginal progesterone supplementation). (pA != pB)
+
+
+
+I can use
+prop.test, a function that tests the null hypothesis that the
+proportions of success is equal across groups.
 
 ```{r}
 # Your code goes here
@@ -268,10 +280,14 @@ Now I need to perform an analysis to determine whether the difference in point e
 
 ```
 
-The results of the proportion test suggest that there is a significant difference in the proportion of live birth successes between the two groups receiving different progesterone supplementation methods (p = 0.031). The 95% confidence interval for the difference in proportions is (-0.0799, -0.0037), suggesting a very minor but higher proportion of birth successes for those receiving vaginal supplementation. 
+The results of the proportion test suggest that there is a significant
+difference in the proportion of live birth successes between the two
+groups receiving different progesterone supplementation methods (p =
+0.031). The 95% confidence interval for the difference in proportions is
+(-0.0799, -0.0037), suggesting a very minor but higher proportion of
+birth successes for those receiving vaginal supplementation.
 
 > Your answer goes here.
-
 
 ## (Optional) Exercise 5: using R to handle multiple comparisons
 
