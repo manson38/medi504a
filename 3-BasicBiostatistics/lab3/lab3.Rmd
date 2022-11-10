@@ -107,9 +107,6 @@ Are high contrast images associated with better visual discrimination by the vis
 
 > Inferential
 
-
-
-
 ## Exercise 2: identifying a suitable analysis method for a given question and data set
 
 rubric={10 points}
@@ -153,9 +150,6 @@ however their assumptions differ. I would use the R function prop.test(), as it 
 designed for this case (i.e. the documentation specifies it is used for testing the null hypothesis
 that proportions are the same)
 
-
-
-
 ## Exercise 3: using R to visualize uncertainty of point estimates
 
 rubric={20 points}
@@ -175,10 +169,13 @@ Your task here is to load the `data/jiang-live-birth.csv` file and create an eff
 visualization which communicates the estimates for each group (proportion of live births) as well as
 the uncertainty of those point estimates at a 95% confidence interval.
 
-```{r, fig.width = 6, fig.height = 5}
+```{r, fig.width = 8, fig.height = 6}
 
 #load the data and look at it!
-(jiang_live_birth <- read.csv("data/jiang-live-birth.csv"))
+jiang_live_birth <- read.csv("data/jiang-live-birth.csv")
+
+#look at the data (first 10 rows)
+head(jiang_live_birth, 10)
 
 #creating new data frame displaying the number of live birth 
 #successes, total attempts, and proportion of successes for each group
@@ -188,7 +185,10 @@ the uncertainty of those point estimates at a 95% confidence interval.
   mutate(prop = live_births/total))
 
 #95% confidence interval for each group
-(confidence <- binom.confint(jiang_live_birth1$live_births, jiang_live_birth1$total, conf.level = 0.95, methods = "exact"))
+(confidence <- binom.confint(jiang_live_birth1$live_births, 
+                             jiang_live_birth1$total, 
+                             conf.level = 0.95, 
+                             methods = "exact"))
 
 #binding confidence interval upper and lowers to jiang_live_birth_1
 #and creating final data frame for plotting, jiang_live_birth_final
@@ -206,16 +206,14 @@ ggplot(aes(x = group, y = prop)) +
        x = "Progesterone Supplementation Method", 
        y = "Proportion of Live Birth Successes") +
   scale_fill_manual(values = c("#009E73", "#56B4E9")) +
-  theme_classic()
+  theme_classic() +
+  theme(plot.title = element_text(size = 12, hjust = 0.5))
 
 ```
 
 The above figure displays the proportion of live birth successes in each progesterone
 supplementation group, and the uncertainty of these point estimates using 95% confidence interval
 error bars.
-
-
-
 
 ## Exercise 4: using R to infer group differences
 
@@ -252,12 +250,12 @@ group B (vaginal progesterone supplementation). (pA != pB)
 This is a two tailed test (not looking for greater than or less than, just looking for difference).
 
 I can use `prop.test()`, an R function that is designed to test the null hypothesis that the
-proportions of success are equal across groups, to test the null hypothesis outlined above. Note that
-this method assumes that sample size is large (i.e. rule of thumb = the number of successes in each
-group is more than 5), and additionally that the proportions are independent and a result of random
-sampling and treatment randomization. The data we are working with reports 811 successes in one
-group and 461 in the other, and we will assume that these data are independent and random allocation
-took place. First, i'll run the proportion test and assign it to prop_test_births:
+proportions of success are equal across groups, to test the null hypothesis outlined above. Note
+that this method assumes that sample size is large (i.e. rule of thumb = the number of successes in
+each group is more than 5), and additionally that the proportions are independent and a result of
+random sampling and treatment randomization. The data we are working with reports 811 successes in
+one group and 461 in the other, and we will assume that these data are independent and random
+allocation took place. First, i'll run the proportion test and assign it to prop_test_births:
 
 ```{r}
 
