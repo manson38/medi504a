@@ -265,11 +265,9 @@ point estimates is statistically significant. Lets do this.
 This is a two tailed test (not looking for greater than or less than, just looking for difference).
 
 I can use `prop.test()`, an R function that is designed to test the null hypothesis that the
-proportions of success are equal across groups, to test the hypothesis outlined above. Note that this method assumes that sample size is large. 
+proportions of success are equal across groups, to test the hypothesis outlined above. Note that this method assumes that sample size is large (i.e. rule of thumb = the number of successes in each group is more than 5), and additionally that the proportions are independent and a result of random sampling and treatment randomization. The data we are working with reports 811 successes in one group and 461 in the other, and we will assume that these data are independent and random allocation took place. 
 
 ```{r}
-#NOTE: p value alone is no enough - effect size, confidence interval, etc is valuable.
-
 
 #proportion test - produces p-value and confidence interval
   prop.test(jiang_live_birth_final$live_births, 
@@ -284,9 +282,9 @@ difference in the proportion of live birth successes between the two
 observed groups receiving different progesterone supplementation methods (p =
 0.031, (smaller than standard practice alpha level of 5%)). The 95% confidence interval for the difference in proportions is
 (-0.0799, -0.0037), suggesting a very minor but statistically clear higher proportion of
-birth successes for those receiving vaginal supplementation (does not cross zero, so we can be somewhat confident a difference exists. 
+birth successes for those receiving vaginal supplementation (does not cross zero, so we can be somewhat confident a difference exists).
 
-The question remains, just how large is the difference we observe? The confidence interval suggests that it is quite small, and a small difference is likely to have little meaning in clinical practice. Effect size calculations can also help to quantify this. I'll calculate Cohen's h, a way of quantifying the difference between proportions that can be used to classify the difference as small, moderate, or large. To do so, i'll use the function `ES.h()` from the package pwr. 
+The question remains, just how large is the difference observed? The confidence interval suggests that it is quite small, and a small difference is likely to have little meaning in clinical practice. Effect size calculations can also help to quantify this. I'll calculate Cohen's h, a way of quantifying the difference between proportions that can be used to classify the difference as small, moderate, or large. To do so, i'll use the function `ES.h()` from the package pwr. 
 
 ```{r}
 
@@ -295,9 +293,9 @@ The question remains, just how large is the difference we observe? The confidenc
 
 ```
 
-The calculated Cohen's h value is ~ -0.085. Cohen provides criteria for interpreting this number. An effect size of h = 0.2 is "small", h = 0.5 is "medium", and h = 0.8 is "large". Note that interpreting this value requires consideration of the absolute value (i.e. ignore the sign), although the sign does indicate the direction of the effect, and in this case suggests that IM injections tend to have less live birth success. The Cohen's h value in this case is very small, suggesting that the effect of this difference would likely not be clinically meaningful. 
+The calculated Cohen's h value is ~ -0.085. Jacob Cohen provides criteria for interpreting this number in his book, 'Statistical Power Analysis for the Behavioral Sciences'. An effect size of h = 0.2 is "small", h = 0.5 is "medium", and h = 0.8 is "large". Note that interpreting this value requires consideration of the absolute value (i.e. ignore the sign), although the sign does indicate the direction of the effect, and in this case suggests that IM injections tend to have less live birth success. The Cohen's h value in this case is very small, suggesting that the effect of this difference would likely not be clinically meaningful. 
 
-For Jiang et al., the results of this analysis suggest that, although there was a statistically clear difference in the proportion of live birth successes across each group, this difference is extremely small and unlikely to be meaningful in clinical practice. For patients undergoing IVF, this analysis suggests that there is likely to be minimal clinically meaningful difference in the live birth success based on the method of progesterone supplementation, and because the vaginal method offers places less burden on patients, it may be the better approach. 
+For Jiang et al., the results of this analysis suggest that, although there was a statistically clear difference in the proportion of live birth successes across each group, this difference is extremely small and unlikely to be meaningful in clinical practice. For patients undergoing IVF, this analysis suggests that there is likely to be minimal clinically meaningful difference in the live birth success based on the method of progesterone supplementation, and because the vaginal method places less burden on patients, it may be the better approach. 
 
 
 
