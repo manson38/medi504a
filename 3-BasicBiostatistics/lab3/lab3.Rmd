@@ -230,8 +230,8 @@ assumptions are made in your analysis, state them. Clearly communicate your resu
 
 To summarise, so far, I have: 1. imported the data on live births in two groups (those receiving IM
 and Intravaginal Progesterone Supplements), 2. looked at the data set and calculated the proportion
-of live births within each group. 3. calculated the 95% confidence interval for the two point
-estimates (i.e. the proportion of live births in each group) 4. plotted the proportion of live
+of live births within each group, 3. calculated the 95% confidence interval for the two point
+estimates (i.e. the proportion of live births in each group), and 4. plotted the proportion of live
 births in each supplementation group with error bars corresponding to the 95% confidence intervals
 of the point estimates.
 
