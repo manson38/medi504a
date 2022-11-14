@@ -3,9 +3,8 @@ title: "MEDI 504A - Lab 3"
 author: "Matthew Manson"
 output:
   pdf_document: default
-  html_document: default
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 100
 ---
 
@@ -24,8 +23,8 @@ By the end of this lab, students should be able to:
 ```{r include=FALSE}
 library(tidyverse)
 library(broom)
-library(binom) #for hypothesis testing
-library(pwr) #for effect size calculation
+library(binom) # for hypothesis testing
+library(pwr) # for effect size calculation
 ```
 
 ## Exercise 1: types of data analysis questions
@@ -171,40 +170,42 @@ the uncertainty of those point estimates at a 95% confidence interval.
 
 ```{r, fig.width = 8, fig.height = 6}
 
-#load the data and look at it!
+# load the data and look at it!
 jiang_live_birth <- read.csv("data/jiang-live-birth.csv")
 
-#look at the data (first 10 rows)
+# look at the data (first 10 rows)
 head(jiang_live_birth, 10)
 
-#creating new data frame displaying the number of live birth 
-#successes, total attempts, and proportion of successes for each group
-(jiang_live_birth1 <- jiang_live_birth %>% 
-  group_by(group) %>% 
-  summarise(live_births = sum(live_birth), total = n()) %>% 
-  mutate(prop = live_births/total))
+# creating new data frame displaying the number of live birth
+# successes, total attempts, and proportion of successes for each group
+(jiang_live_birth1 <- jiang_live_birth %>%
+  group_by(group) %>%
+  summarise(live_births = sum(live_birth), total = n()) %>%
+  mutate(prop = live_births / total))
 
-#95% confidence interval for each group
-(confidence <- binom.confint(jiang_live_birth1$live_births, 
-                             jiang_live_birth1$total, 
-                             conf.level = 0.95, 
-                             methods = "exact"))
+# 95% confidence interval for each group
+(confidence <- binom.confint(jiang_live_birth1$live_births,
+  jiang_live_birth1$total,
+  conf.level = 0.95,
+  methods = "exact"))
 
-#binding confidence interval upper and lowers to jiang_live_birth_1
-#and creating final data frame for plotting, jiang_live_birth_final
-(jiang_live_birth_final <- cbind(jiang_live_birth1, confidence$lower, confidence$upper) %>% 
-                           #rename columns
-                           rename(conf_lower = 'confidence$lower', conf_upper = 'confidence$upper'))
+# binding confidence interval upper and lowers to jiang_live_birth_1
+# and creating final data frame for plotting, jiang_live_birth_final
+(jiang_live_birth_final <- cbind(jiang_live_birth1, confidence$lower, confidence$upper) %>%
+  # rename columns
+  rename(conf_lower = "confidence$lower", conf_upper = "confidence$upper"))
 
-#plotting proportions of live births in each group
-jiang_live_birth_final %>% 
-ggplot(aes(x = group, y = prop)) +
+# plotting proportions of live births in each group
+jiang_live_birth_final %>%
+  ggplot(aes(x = group, y = prop)) +
   geom_col(aes(fill = group), show.legend = FALSE) +
-  #adding 95% CI error bars, custom width
+  # adding 95% CI error bars, custom width
   geom_errorbar(aes(ymin = conf_lower, ymax = conf_upper), width = 0.2) +
-  labs(title = "The Average Proportion of Live Birth Successes in Two Progesterone Supplementation Method\nGroups for those Undergoing Frozen-thawed Embryo Transfer During In-vitro Fertilization (IVF)",
-       x = "Progesterone Supplementation Method", 
-       y = "Proportion of Live Birth Successes") +
+  labs(
+    title = "The Average Proportion of Live Birth Successes in Two Progesterone Supplementation Method\nGroups for those Undergoing Frozen-thawed Embryo Transfer During In-vitro Fertilization (IVF)",
+    x = "Progesterone Supplementation Method",
+    y = "Proportion of Live Birth Successes"
+  ) +
   scale_fill_manual(values = c("#009E73", "#56B4E9")) +
   theme_classic() +
   theme(plot.title = element_text(size = 12, hjust = 0.5))
@@ -259,12 +260,12 @@ allocation took place. First, i'll run the proportion test and assign it to prop
 
 ```{r}
 
-#proportion test - produces p-value and confidence interval 
-#for difference in proportions 
-  (prop_test_births <- prop.test(jiang_live_birth_final$live_births, 
-            jiang_live_birth_final$total, 
-            alternative = "two.sided", 
-            conf.level = 0.95))
+# proportion test - produces p-value and confidence interval
+# for difference in proportions
+(prop_test_births <- prop.test(jiang_live_birth_final$live_births,
+  jiang_live_birth_final$total,
+  alternative = "two.sided",
+  conf.level = 0.95))
 
 ```
 
@@ -289,8 +290,8 @@ small, moderate, or large. To do so, i'll use the function `ES.h()` from the pac
 
 ```{r}
 
-#effect size
-  ES.h(jiang_live_birth_final[1, 4], jiang_live_birth_final[2, 4])
+# effect size
+ES.h(jiang_live_birth_final[1, 4], jiang_live_birth_final[2, 4])
 
 ```
 
@@ -328,7 +329,7 @@ testing a problem and what do I need to do about it?
 slides](https://github.com/ttimbers/SFU_omics_2018/blob/master/timbers_SFU_omics_2018.pdf)
 
 ```{r}
-#import data, select relevant rows, print to screen
+# import data, select relevant rows, print to screen
 GWAS_results <- read_csv("data/GWAS_results.csv", show_col_types = FALSE) %>%
   select(gene = public_gene_name, pval = `p-value`)
 GWAS_results
@@ -351,14 +352,13 @@ Answer the following questions
     fluorescent dye into their sensory neurons) at the unadjusted $\alpha = 0.05$?
 
 ```{r}
-#number of genes in the dataset:
-  n_distinct(GWAS_results$gene)
+# number of genes in the dataset:
+n_distinct(GWAS_results$gene)
 
-#number of genes associated with the phenotype:
-  GWAS_results %>% 
-    filter(pval <= 0.05) %>% 
-    count()
-
+# number of genes associated with the phenotype:
+GWAS_results %>%
+  filter(pval <= 0.05) %>%
+  count()
 ```
 
 There are 1150 genes in the dataset. 100 genes are associated with the phenotype, if alpha = 0.05 is
@@ -383,13 +383,13 @@ significance level?
 
 ```{r}
 
-#calculating adjusted p-values, adding them to the data set
-(GWAS_results_adjpval <- GWAS_results %>% 
-  mutate(adjpval = p.adjust(pval, method = "bonferroni")) %>% 
+# calculating adjusted p-values, adding them to the data set
+(GWAS_results_adjpval <- GWAS_results %>%
+  mutate(adjpval = p.adjust(pval, method = "bonferroni")) %>%
   select(gene, pval, adjpval))
 
-#finding the genes associated with the treatment, after adjustment
-GWAS_results_adjpval %>% 
+# finding the genes associated with the treatment, after adjustment
+GWAS_results_adjpval %>%
   filter(adjpval <= 0.05)
 
 ```
