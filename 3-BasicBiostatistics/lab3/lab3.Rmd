@@ -144,7 +144,7 @@ transfers (successful + unsuccessful). A snippet of the data is shown below:
 `prop.test()`), or Chi-square test.
 
 *Justification*: Here, the researchers are trying to compare the *proportion* of miscarriages
-experienced by two groups. When comparing *proportions*, we can use one of the two methods above,
+experienced by two groups. When comparing two *proportions*, we can use one of the two methods above,
 however their assumptions differ. I would use the R function prop.test(), as it is specifically
 designed for this case (i.e. the documentation specifies it is used for testing the null hypothesis
 that proportions are the same)
