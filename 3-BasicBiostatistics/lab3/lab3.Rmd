@@ -191,7 +191,8 @@ head(jiang_live_birth, 10)
 
 # binding confidence interval upper and lowers to jiang_live_birth_1
 # and creating final data frame for plotting, jiang_live_birth_final
-(jiang_live_birth_final <- cbind(jiang_live_birth1, confidence$lower, confidence$upper) %>%
+(jiang_live_birth_final <- 
+    cbind(jiang_live_birth1, confidence$lower, confidence$upper) %>%
   # rename columns
   rename(conf_lower = "confidence$lower", conf_upper = "confidence$upper"))
 
@@ -202,7 +203,9 @@ jiang_live_birth_final %>%
   # adding 95% CI error bars, custom width
   geom_errorbar(aes(ymin = conf_lower, ymax = conf_upper), width = 0.2) +
   labs(
-    title = "The Average Proportion of Live Birth Successes in Two Progesterone Supplementation Method\nGroups for those Undergoing Frozen-thawed Embryo Transfer During In-vitro Fertilization (IVF)",
+    title = "The Average Proportion of Live Birth Successes in 
+    Two Progesterone Supplementation Method Groups for those Undergoing 
+    Frozen-thawed Embryo Transfer During In-vitro Fertilization (IVF)",
     x = "Progesterone Supplementation Method",
     y = "Proportion of Live Birth Successes"
   ) +
