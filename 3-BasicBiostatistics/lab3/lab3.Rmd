@@ -151,7 +151,8 @@ would use the R function prop.test(), as it is specifically designed for this ca
 documentation specifies it is used for testing the null hypothesis that proportions are the same).
 prop.test() assumes that sample size is large (i.e. rule of thumb = the number of successes in each
 group is more than 5), and that the proportions are independent and a result of random sampling and
-treatment randomization.
+treatment randomization. In this case, all assumptions are likely met (although more information
+would be needed to confirm), supporting its use.
 
 ## Exercise 3: using R to visualize uncertainty of point estimates
 
@@ -231,15 +232,21 @@ visualization alone, it is not yet clear as to whether the observed difference i
 statistically significant. Perform a suitable analysis to answer this question. If any hypotheses or
 assumptions are made in your analysis, state them. Clearly communicate your results.
 
-To summarise, so far, I have: 1. imported the data on live births in two groups (those receiving IM
-and Intravaginal Progesterone Supplements), 2. looked at the data set and calculated the proportion
-of live births within each group, 3. calculated the 95% confidence interval for the two point
-estimates (i.e. the proportion of live births in each group), and 4. plotted the proportion of live
-births in each supplementation group with error bars corresponding to the 95% confidence intervals
-of the point estimates.
+To summarise, so far, I have:
+
+1.  imported the data on live births in two groups (those receiving IM and Intravaginal Progesterone
+    Supplements),
+
+2.  looked at the data set and calculated the proportion of live births within each group,
+
+3.  calculated the 95% confidence interval for the two point estimates (i.e. the proportion of live
+    births in each group), and
+
+4.  plotted the proportion of live births in each supplementation group with error bars
+    corresponding to the 95% confidence intervals of the point estimates.
 
 Now I need to perform an analysis to determine whether the difference in point estimates is
-statistically significant. Lets do this.
+statistically clear. Lets do this.
 
 *Question*: Is there a difference between the proportion of live birth successes among those who
 recieve intramuscular progesterone supplementation (group A, proportion A, pA) and the those who
@@ -381,10 +388,10 @@ Briefly describe (in one or two sentences) why it would be misleading to report 
 
 *Description*: In this case, multiple hypothesis tests were done simultaneously, and because of
 this, based on chance alone, there is some probability that some of these significant results are
-false positives (and this probablity increases as more hypothesis tests are done!). 'Cherry picking'
-a single positive result and reporting it alone from a pool of significant tests provides no context
-to the viewer, and there is relatively high probability that this significant result is just due to
-chance.
+false positives (and this probability increases as more hypothesis tests are done!). 'Cherry
+picking' a single positive result and reporting it alone from a pool of significant tests provides
+no context to the viewer/reader, and there is relatively high probability that this significant
+result is just due to chance.
 
 ## (Optional) Exercise 5.3:
 
@@ -394,7 +401,8 @@ significance level?
 
 ```{r}
 
-# calculating adjusted p-values, adding them to the data set
+# calculating adjusted p-values, adding them to the data set,
+# and selecting relevant columns
 (GWAS_results_adjpval <- GWAS_results %>%
   mutate(adjpval = p.adjust(pval, method = "bonferroni")) %>%
   select(gene, pval, adjpval))
