@@ -121,9 +121,9 @@ fertilization (IVF) patients whose embryos undergoe preimplantation genetic test
 *Question Type*: Inferential
 
 *Justification*: This question suggests that the results of the analysis of data from a sample of
-those who undergo IVF will be generalized to all individuals who undergo IVF. For this reason this
-question can be considered an inferential statistical question - it aims to make statements beyond
-the population from which the data was generated.
+those who undergo IVF will be generalized to all individuals who undergo IVF (i.e the broader
+population). For this reason this question can be considered an inferential statistical question -
+it aims to make statements beyond the sample of data on which statistical tests were conducted.
 
 **Data set:** Data from 457 patients was collected from the a local fertility clinic. Patients had
 the choice of opting for PGT or not. There is an added financial cost for PGT and therefore not all
@@ -144,10 +144,14 @@ transfers (successful + unsuccessful). A snippet of the data is shown below:
 `prop.test()`), or Chi-square test.
 
 *Justification*: Here, the researchers are trying to compare the *proportion* of miscarriages
-experienced by two groups. When comparing two *proportions*, we can use one of the two methods above,
-however their assumptions differ. I would use the R function prop.test(), as it is specifically
-designed for this case (i.e. the documentation specifies it is used for testing the null hypothesis
-that proportions are the same)
+experienced by two groups (specifically, the task is to compare the average proportion of
+miscarriages between the two groups - those who underwent PGT and those who did not). When comparing
+two *proportions*, we can use one of the two methods above, however their assumptions differ. I
+would use the R function prop.test(), as it is specifically designed for this case (i.e. the
+documentation specifies it is used for testing the null hypothesis that proportions are the same).
+prop.test() assumes that sample size is large (i.e. rule of thumb = the number of successes in each
+group is more than 5), and that the proportions are independent and a result of random sampling and
+treatment randomization.
 
 ## Exercise 3: using R to visualize uncertainty of point estimates
 
@@ -170,7 +174,7 @@ the uncertainty of those point estimates at a 95% confidence interval.
 
 ```{r, fig.width = 8, fig.height = 6}
 
-# load the data and look at it!
+# load the data
 jiang_live_birth <- read.csv("data/jiang-live-birth.csv")
 
 # look at the data (first 10 rows)
@@ -183,7 +187,7 @@ head(jiang_live_birth, 10)
   summarise(live_births = sum(live_birth), total = n()) %>%
   mutate(prop = live_births / total))
 
-# 95% confidence interval for each group
+# 95% confidence interval for each group, using exact method
 (confidence <- binom.confint(jiang_live_birth1$live_births,
   jiang_live_birth1$total,
   conf.level = 0.95,
@@ -192,7 +196,7 @@ head(jiang_live_birth, 10)
 # binding confidence interval upper and lowers to jiang_live_birth_1
 # and creating final data frame for plotting, jiang_live_birth_final
 (jiang_live_birth_final <- 
-    cbind(jiang_live_birth1, confidence$lower, confidence$upper) %>%
+  cbind(jiang_live_birth1, confidence$lower, confidence$upper) %>%
   # rename columns
   rename(conf_lower = "confidence$lower", conf_upper = "confidence$upper"))
 
@@ -207,8 +211,7 @@ jiang_live_birth_final %>%
     Two Progesterone Supplementation Method Groups for those Undergoing 
     Frozen-thawed Embryo Transfer During In-vitro Fertilization (IVF)",
     x = "Progesterone Supplementation Method",
-    y = "Proportion of Live Birth Successes"
-  ) +
+    y = "Proportion of Live Birth Successes") +
   scale_fill_manual(values = c("#009E73", "#56B4E9")) +
   theme_classic() +
   theme(plot.title = element_text(size = 12, hjust = 0.5))
@@ -283,13 +286,16 @@ proportion of live birth successes between the two observed groups receiving dif
 supplementation methods (p = 0.031, (smaller than standard practice alpha level of 5%)). The 95%
 confidence interval for the difference in proportions is (-0.0799, -0.0037), suggesting a very minor
 but statistically clear higher proportion of birth successes for those receiving vaginal
-supplementation (does not cross zero, so we can be somewhat confident a difference exists).
+supplementation (does not cross zero - we can be 95% confident that the true difference in
+proportions falls between these values).
 
-The question remains, just how large is the difference observed? The confidence interval suggests
+The question remains, just how large is this observed difference? The confidence interval suggests
 that it is quite small, and a small difference is likely to have little meaning in clinical
-practice. Effect size calculations can also help to quantify this. I'll calculate Cohen's h, a way
-of quantifying the difference between proportions that can be used to classify the difference as
-small, moderate, or large. To do so, i'll use the function `ES.h()` from the package pwr.
+practice. Effect size calculations can also help to quantify this. I'll calculate Cohen's h, a
+method of quantifying the difference between proportions. Cohen's h can be used to classify the
+difference between proportions as small, moderate, or large, and ultimately, decide whether such
+difference is likely to be meaningful. To do so, i'll use the function `ES.h()` from the package
+pwr.
 
 ```{r}
 
@@ -301,10 +307,11 @@ ES.h(jiang_live_birth_final[1, 4], jiang_live_birth_final[2, 4])
 The calculated Cohen's h value is \~ -0.085. Jacob Cohen provides criteria for interpreting this
 number in his book, 'Statistical Power Analysis for the Behavioral Sciences' (Cohen, 1988). An
 effect size of h = 0.2 is "small", h = 0.5 is "medium", and h = 0.8 is "large". Note that
-interpreting this value requires consideration of the absolute value (i.e. ignore the sign),
-although the sign does indicate the direction of the effect, and in this case suggests that IM
-injections tend to have less live birth success. The Cohen's h value in this case is very small,
-suggesting that the effect of this difference would likely not be clinically meaningful.
+interpreting this value with respect to Cohen's criteria requires consideration of the absolute
+value (i.e. ignore the sign), although the sign does indicate the direction of the effect. In this
+case, the Cohen's h value of -0.085 suggests that IM injections tend to have less live birth
+success, however, the Cohen's h value is also extremely small (smaller than 0.2), suggesting that
+the effect of this difference would likely not be clinically meaningful.
 
 For Jiang et al., the results of this analysis suggest that, although there was a statistically
 clear difference in the proportion of live birth successes across each group, this difference is
@@ -372,11 +379,12 @@ considered the threshold.
 Briefly describe (in one or two sentences) why it would be misleading to report only one of the
 "significant" tests (and ignoring the fact that others were done too).
 
-In this case, multiple hypothesis tests were done simultaneously, and because of this, based on
-chance alone, there is some probability that some of these significant results are false positives
-(and this probablity increases as more hypothesis tests are done!). 'Cherry picking' a single
-positive result and reporting it alone from a pool of significant tests provides no context to the
-viewer, and there is relatively high probability that this significant result is just due to chance.
+*Description*: In this case, multiple hypothesis tests were done simultaneously, and because of
+this, based on chance alone, there is some probability that some of these significant results are
+false positives (and this probablity increases as more hypothesis tests are done!). 'Cherry picking'
+a single positive result and reporting it alone from a pool of significant tests provides no context
+to the viewer, and there is relatively high probability that this significant result is just due to
+chance.
 
 ## (Optional) Exercise 5.3:
 
