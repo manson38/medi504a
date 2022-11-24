@@ -1,6 +1,6 @@
 ---
 title: 'MEDI 504A: Working with Diabetes Data'
-author: "Ehsan Karim & Liang Xu, ehsan.karim@ubc.ca"
+author: "Ehsan Karim & Liang Xu, ehsan.karim@ubc.ca (Completed by: Matthew Manson)"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   pdf_document: default
@@ -166,7 +166,11 @@ Outcome and model specification:
 ```{r, cache=TRUE}
 class(diabetic.data$readmitted)
 levels(diabetic.data$readmitted)
-model.formula <- as.formula("readmitted ~ discharge + race + source + medical_specialty + time_in_hospital + age + diag_1 + A1Cresult  +  diag_1 * discharge + race * discharge + medical_specialty*discharge + discharge*time_in_hospital + time_in_hospital*medical_specialty + age * medical_specialty + time_in_hospital*diag_1 + A1Cresult* diag_1")
+model.formula <- as.formula("readmitted ~ discharge + race + source + medical_specialty + 
+                             time_in_hospital + age + diag_1 + A1Cresult  +  diag_1 * discharge +
+                             race * discharge + medical_specialty*discharge + discharge*time_in_hospital +
+                             time_in_hospital*medical_specialty + age * medical_specialty +
+                             time_in_hospital*diag_1 + A1Cresult* diag_1")
 ```
 
 1. Fit a logistic regression model using the above formula and the analytic data `diabetic.data`.
