@@ -179,6 +179,13 @@ b) use `summary()` function to report the fit
 # your code here
 # fit_full = glm(...., data = diabetic.data)
 # summary(fit_full)
+
+#fit model to formula and data
+fit_full = glm(model.formula, data = diabetic.data,
+               family = binomial(link = "logit"))
+
+#reporting the fit
+summary(fit_full)
 ```
 
 ### Model Performance and Discrimination
@@ -188,13 +195,29 @@ To describe the discriminative ability of the model over different possible cuto
 2. Report AUC from ROC.
 
 ```{r}
+
 # obs.y2<-diabetic.data$readmitted
 # pred.y2 <- predict(fit_full, type = "response")
-require(pROC)
 # your code here
 # ?roc
 # ?auc
+
+require(pROC)
+
+obs.y2 <- diabetic.data$readmitted # Observed
+pred.y2 <- predict(fit_full, type = "response") # Predicted
+rocobj <- roc(obs.y2, pred.y2) #ROC
+
+rocobj #looking at ROC object
+
+plot(rocobj) #ROC plot
+
+auc(rocobj) #auc 
+
 ```
+
+The AUC is 0.6189. This is not a great result (0.5 is no better than chance). 
+
 
 ### Validation
 
@@ -209,6 +232,28 @@ Previously, we considered measures of performance using the whole dataset, and p
 # trCntl <- trainControl(...)
 # fit_CV <- train(...., data = diabetic.data)
 # fit_CV$resample
+
+require(caret)
+
+#control
+trCntl <- trainControl(method = "cv", number = 5, 
+                   classProbs = TRUE,
+                   summaryFunction = twoClassSummary)
+
+
+#fit model with method glm and specify family of model to binomial() 
+#due to nature of outcome variable
+fit_CV <- train(model.formula, 
+                trControl = trCntl,
+                data = diabetic.data, 
+                method = "glm",
+                family = binomial(),
+                metric = "ROC")
+
+fit_CV #look at model
+
+fit_CV$resample #look at results for each cross validation fold
+
 ```
 
 ### Lasso, ridge or elastic net
@@ -224,12 +269,34 @@ require(glmnet)
 #                   tuneGrid = expand.grid(alpha = c(0,0.5,1),
 #                                       lambda = c(0.25, 0.75)))
 # fit.cv.bin
+
+ctrl4 <- trainControl(method = "cv", number = 5,
+                     classProbs = TRUE,
+                     summaryFunction = twoClassSummary)
+
+fit.cv.bin4 <- train(model.formula, 
+                    trControl = ctrl4,
+                    data = diabetic.data,
+                    method = "glmnet",
+                    tuneGrid = expand.grid(alpha = c(0,0.5,1),
+                                        lambda = c(0.25, 0.75)), 
+                    verbose = FALSE,
+                    metric="ROC")
+
+fit.cv.bin4
+
 ```
+
+The largest ROC value (0.6070) is provided when alpha is 0 (ridge method) and lambda is 0.25. 
+
+
 
 5. Plot the AUC from ROCs for all combinations of parameter grids used in the previous analysis.
 
 ```{r}
 # your code here
+
+plot(fit.cv.bin4)
 ```
 
 
@@ -241,7 +308,10 @@ In addition to regression methods, the data can be explored with decision trees 
 
 ```{r}
 require(caret)
-model.formula0 <- as.formula("readmitted ~ discharge + race + source + medical_specialty + time_in_hospital + age + diag_1 + A1Cresult  +  time_in_hospital")
+model.formula0 <- as.formula("readmitted ~ discharge + race + source + 
+                             medical_specialty + time_in_hospital + 
+                             age + diag_1 + A1Cresult  +  time_in_hospital")
+
 # your code here
 # ctrl<-trainControl(...)
 # fit.cv.bin<-train(model.formula0, 
@@ -249,6 +319,22 @@ model.formula0 <- as.formula("readmitted ~ discharge + race + source + medical_s
 #                 trControl = ctrl, 
 #                 ....)
 # fit.cv.bin
+
+
+
+ctrl6<-trainControl(method = "cv", number = 5, 
+                   classProbs = TRUE,
+                   summaryFunction = twoClassSummary)
+
+# fit the model with formula model.formula0
+
+fit.cv.bin6<-train(model.formula0, 
+                  data = diabetic.data, 
+                  trControl = ctrl6, 
+                  method = "rpart",
+                  metric="ROC")
+fit.cv.bin6
+
 ```
 
 
@@ -256,7 +342,13 @@ Variable importance: Report the 5 most important predictor categories.
 ```{r}
 # your code here
 # ?varImp
+
+caret::varImp(fit.cv.bin6, scale = FALSE)
+caret::varImp(fit.cv.bin6, scale = TRUE) #importance values scaled between 0 and 100
 ```
+
+The 5 most important predictor categoreis are `dischargeOther`, `time_in_hopsital`, `age[60,100)`, `diag_1Respiratory` and `diag1_Musculoskeletal`.
+
 
 ### Bagging
 
@@ -271,13 +363,36 @@ Variable importance: Report the 5 most important predictor categories.
 #                 bagControl = bagControl(fit = ldaBag$fit, 
 #                                        predict = ldaBag$pred, 
 #                                        aggregate = ldaBag$aggregate))
+
+ctrl7 <- trainControl(method = "cv", number = 5,
+                     classProbs = TRUE,
+                     summaryFunction = twoClassSummary)
+
+fit.cv.bin7 <- train(model.formula0, 
+                    data = diabetic.data, 
+                    trControl = ctrl7, 
+                    method = "bag",
+                    bagControl = bagControl(fit = ldaBag$fit, 
+                                            predict = ldaBag$pred, 
+                                            aggregate = ldaBag$aggregate),
+                    metric="ROC")
+
+fit.cv.bin7
+
+
 ```
 
 
 Variable importance: Report the 5 most important predictor categories.
 ```{r}
 # your code here
+
+caret::varImp(fit.cv.bin7, scale = FALSE)
+caret::varImp(fit.cv.bin7, scale = TRUE) # Scaled between 0 and 100
 ```
+
+The 5 most important predictor categories when using the bagging method are: `discharge`, `time_in_hospital`, `age`, `medical_speciality` and `source`. Slightly different than the results of the CART/Decision Tree. 
+
 
 ### Boosting
 
@@ -290,13 +405,33 @@ Variable importance: Report the 5 most important predictor categories.
 #                 data = diabetic.data, 
 #                 trControl = ctrl,
 #                 ...)
+
+
+ctrl8 <- trainControl(method = "cv", number = 5,
+                     classProbs = TRUE,
+                     summaryFunction = twoClassSummary)
+
+fit.cv.bin8 <- train(model.formula0, 
+               data = diabetic.data, 
+               trControl = ctrl8,
+               method = "gbm",
+               verbose = FALSE,
+               metric="ROC")
+
 ```
 
 
 Variable importance: Report the 5 most important predictor categories.
 ```{r}
 # your code here
+
+caret::varImp(fit.cv.bin8, scale = FALSE)
+caret::varImp(fit.cv.bin8, scale = TRUE) # Scaled between 0 and 100
 ```
 
+The 5 most important predictor categories when using the boosting method are: `dischargeOther`, `time_in_hospital`, `age[60, 100)`, `diag_1Circulatory` and `medical_specialtyInternalMedicine`. Slightly different than the results than both the CART/Decision Tree and the bagging method. 
+
+
+#### Relevant Paper:
 
 [1] Beata Strack, Jonathan P. DeShazo, Chris Gennings, Juan L. Olmo, Sebastian Ventura, Krzysztof J. Cios, John N. Clore, "Impact of HbA1c Measurement on Hospital Readmission Rates: Analysis of 70,000 Clinical Database Patient Records", BioMed Research International, vol. 2014, Article ID 781670, 11 pages, 2014. https://doi.org/10.1155/2014/781670
