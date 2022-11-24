@@ -237,7 +237,7 @@ Previously, we considered measures of performance using the whole dataset, and p
 
 3. Set up 5-fold cross-validation, fit logistic regression and obtain AUC from ROC from all the test datasets.
 
-```{r, echo=FALSE}
+```{r}
 # your code here
 # trCntl <- trainControl(...)
 # fit_CV <- train(...., data = diabetic.data)
