@@ -186,9 +186,6 @@ a) The results should be comparable to the values reported in Table 4 (but may n
 b) use `summary()` function to report the fit
 
 ```{r}
-# your code here
-# fit_full = glm(...., data = diabetic.data)
-# summary(fit_full)
 
 #fit model to formula and data
 fit_full = glm(model.formula, data = diabetic.data,
@@ -206,12 +203,6 @@ To describe the discriminative ability of the model over different possible cuto
 
 ```{r}
 
-# obs.y2<-diabetic.data$readmitted
-# pred.y2 <- predict(fit_full, type = "response")
-# your code here
-# ?roc
-# ?auc
-
 require(pROC)
 
 obs.y2 <- diabetic.data$readmitted # Observed
@@ -222,7 +213,7 @@ rocobj #looking at ROC object
 
 plot(rocobj) #ROC plot
 
-auc(rocobj) #auc 
+auc(rocobj) #AUC
 
 ```
 
@@ -238,10 +229,6 @@ Previously, we considered measures of performance using the whole dataset, and p
 3. Set up 5-fold cross-validation, fit logistic regression and obtain AUC from ROC from all the test datasets.
 
 ```{r}
-# your code here
-# trCntl <- trainControl(...)
-# fit_CV <- train(...., data = diabetic.data)
-# fit_CV$resample
 
 require(caret)
 
@@ -264,21 +251,20 @@ fit_CV #look at model
 
 fit_CV$resample #look at results for each cross validation fold
 
+mean(fit_CV$resample$ROC) #mean AUC for all test datasets/resamples
+
 ```
+
+Great. Above we utilize 5-fold cross-validation and fit a linear regression model. We obtain an average AUC of 0.6081 which, again, is not a great result.
+
 
 ### Lasso, ridge or elastic net
 
 4. Within 5 fold cross-validation, run the regularized regressions with the following parameter grids: `alpha = c(0,0.5,1), lambda = c(0.25, 0.75)`. Report the best alpha and lambda values the provides best AUC from ROC.  
 
 ```{r}
+
 require(glmnet)
-# your code here
-# ctrl<-trainControl(...)
-# fit.cv.bin<-train(..., data = diabetic.data,
-#                   trControl = ctrl,
-#                   tuneGrid = expand.grid(alpha = c(0,0.5,1),
-#                                       lambda = c(0.25, 0.75)))
-# fit.cv.bin
 
 ctrl4 <- trainControl(method = "cv", number = 5,
                      classProbs = TRUE,
@@ -293,7 +279,7 @@ fit.cv.bin4 <- train(model.formula,
                     verbose = FALSE,
                     metric="ROC")
 
-fit.cv.bin4
+fit.cv.bin4 #look at the train object
 
 ```
 
@@ -304,8 +290,6 @@ The largest ROC value (0.6070) is provided when alpha is 0 (ridge method) and la
 5. Plot the AUC from ROCs for all combinations of parameter grids used in the previous analysis.
 
 ```{r}
-# your code here
-
 plot(fit.cv.bin4)
 ```
 
@@ -318,43 +302,35 @@ In addition to regression methods, the data can be explored with decision trees 
 
 ```{r}
 require(caret)
+
+#new model formula
 model.formula0 <- as.formula("readmitted ~ discharge + race + source + 
                              medical_specialty + time_in_hospital + 
                              age + diag_1 + A1Cresult  +  time_in_hospital")
 
-# your code here
-# ctrl<-trainControl(...)
-# fit.cv.bin<-train(model.formula0, 
-#                 data = diabetic.data, 
-#                 trControl = ctrl, 
-#                 ....)
-# fit.cv.bin
-
-
-
+#control
 ctrl6<-trainControl(method = "cv", number = 5, 
                    classProbs = TRUE,
                    summaryFunction = twoClassSummary)
 
 # fit the model with formula model.formula0
-
 fit.cv.bin6<-train(model.formula0, 
                   data = diabetic.data, 
                   trControl = ctrl6, 
                   method = "rpart",
                   metric="ROC")
-fit.cv.bin6
+
+fit.cv.bin6 #look at trained model object
 
 ```
 
 
 Variable importance: Report the 5 most important predictor categories. 
 ```{r}
-# your code here
-# ?varImp
 
 caret::varImp(fit.cv.bin6, scale = FALSE)
 caret::varImp(fit.cv.bin6, scale = TRUE) #importance values scaled between 0 and 100
+
 ```
 
 The 5 most important predictor categoreis are `dischargeOther`, `time_in_hopsital`, `age[60,100)`, `diag_1Respiratory` and `diag1_Musculoskeletal`.
@@ -365,14 +341,6 @@ The 5 most important predictor categoreis are `dischargeOther`, `time_in_hopsita
 7. Within 5 fold cross-validation, run the bagging method. 
 
 ```{r}
-# your code here
-# ctrl<-trainControl(...)
-# fit.cv.bin<-train(..., data = diabetic.data, 
-#                 trControl = ctrl, 
-#                 method = "bag",
-#                 bagControl = bagControl(fit = ldaBag$fit, 
-#                                        predict = ldaBag$pred, 
-#                                        aggregate = ldaBag$aggregate))
 
 ctrl7 <- trainControl(method = "cv", number = 5,
                      classProbs = TRUE,
@@ -389,16 +357,15 @@ fit.cv.bin7 <- train(model.formula0,
 
 fit.cv.bin7
 
-
 ```
 
 
 Variable importance: Report the 5 most important predictor categories.
 ```{r}
-# your code here
 
 caret::varImp(fit.cv.bin7, scale = FALSE)
 caret::varImp(fit.cv.bin7, scale = TRUE) # Scaled between 0 and 100
+
 ```
 
 The 5 most important predictor categories when using the bagging method are: `discharge`, `time_in_hospital`, `age`, `medical_speciality` and `source`. Slightly different than the results of the CART/Decision Tree. 
@@ -409,13 +376,6 @@ The 5 most important predictor categories when using the bagging method are: `di
 8. Within 5 fold cross-validation, run the boosting method. 
 
 ```{r, results='hide',warning=FALSE,message=FALSE,error=FALSE}
-# your code here
-# ctrl<-trainControl(....)
-# fit.cv.bin<-train(model.formula0, 
-#                 data = diabetic.data, 
-#                 trControl = ctrl,
-#                 ...)
-
 
 ctrl8 <- trainControl(method = "cv", number = 5,
                      classProbs = TRUE,
@@ -433,10 +393,10 @@ fit.cv.bin8 <- train(model.formula0,
 
 Variable importance: Report the 5 most important predictor categories.
 ```{r}
-# your code here
 
 caret::varImp(fit.cv.bin8, scale = FALSE)
 caret::varImp(fit.cv.bin8, scale = TRUE) # Scaled between 0 and 100
+
 ```
 
 The 5 most important predictor categories when using the boosting method are: `dischargeOther`, `time_in_hospital`, `age[60, 100)`, `diag_1Circulatory` and `medical_specialtyInternalMedicine`. Slightly different than the results than both the CART/Decision Tree and the bagging method. 
