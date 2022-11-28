@@ -335,7 +335,7 @@ caret::varImp(fit.cv.bin6, scale = FALSE)
 
 ```
 
-The 5 most important predictor categoreis are `dischargeOther`, `time_in_hopsital`, `age[60,100)`, `diag_1Respiratory` and `diag1_Musculoskeletal`.
+The 5 most important predictor categories are `dischargeOther`, `time_in_hopsital`, `age[60,100)`, `diag_1Respiratory` and `diag1_Musculoskeletal`.
 
 
 ### Bagging
@@ -344,10 +344,13 @@ The 5 most important predictor categoreis are `dischargeOther`, `time_in_hopsita
 
 ```{r}
 
+#control
 ctrl7 <- trainControl(method = "cv", number = 5,
                      classProbs = TRUE,
                      summaryFunction = twoClassSummary)
 
+#train model specifying bag under method
+#to use the bagging method
 fit.cv.bin7 <- train(model.formula0, 
                     data = diabetic.data, 
                     trControl = ctrl7, 
@@ -356,8 +359,6 @@ fit.cv.bin7 <- train(model.formula0,
                                             predict = ldaBag$pred, 
                                             aggregate = ldaBag$aggregate),
                     metric="ROC")
-
-fit.cv.bin7
 
 ```
 
