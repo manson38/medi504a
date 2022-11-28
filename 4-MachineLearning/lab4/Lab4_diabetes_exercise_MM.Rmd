@@ -213,7 +213,7 @@ rocobj #looking at ROC object
 
 plot(rocobj) #ROC plot
 
-auc(rocobj) #AUC
+auc(rocobj) #extract AUC alone from rocobj
 
 ```
 
@@ -251,7 +251,7 @@ fit_CV #look at model
 
 fit_CV$resample #look at results for each cross validation fold
 
-mean(fit_CV$resample$ROC) #mean AUC for all test datasets/resamples
+mean(fit_CV$resample$ROC) #mean AUC across datasets/resamples (also in model)
 
 ```
 
@@ -266,10 +266,12 @@ Great. Above we utilize 5-fold cross-validation and fit a linear regression mode
 
 require(glmnet)
 
+#control
 ctrl4 <- trainControl(method = "cv", number = 5,
                      classProbs = TRUE,
                      summaryFunction = twoClassSummary)
 
+#fit model, glmnet method, vectors of alpha and lambda values
 fit.cv.bin4 <- train(model.formula, 
                     trControl = ctrl4,
                     data = diabetic.data,
@@ -283,7 +285,7 @@ fit.cv.bin4 #look at the train object
 
 ```
 
-The largest ROC value (0.6070) is provided when alpha is 0 (ridge method) and lambda is 0.25. 
+The largest ROC value is provided when alpha is 0 (ridge method) and lambda is 0.25. 
 
 
 
@@ -314,6 +316,7 @@ ctrl6<-trainControl(method = "cv", number = 5,
                    summaryFunction = twoClassSummary)
 
 # fit the model with formula model.formula0
+# use rpart method to specify regression tree
 fit.cv.bin6<-train(model.formula0, 
                   data = diabetic.data, 
                   trControl = ctrl6, 
@@ -329,7 +332,6 @@ Variable importance: Report the 5 most important predictor categories.
 ```{r}
 
 caret::varImp(fit.cv.bin6, scale = FALSE)
-caret::varImp(fit.cv.bin6, scale = TRUE) #importance values scaled between 0 and 100
 
 ```
 
@@ -364,7 +366,6 @@ Variable importance: Report the 5 most important predictor categories.
 ```{r}
 
 caret::varImp(fit.cv.bin7, scale = FALSE)
-caret::varImp(fit.cv.bin7, scale = TRUE) # Scaled between 0 and 100
 
 ```
 
@@ -377,10 +378,13 @@ The 5 most important predictor categories when using the bagging method are: `di
 
 ```{r, results='hide',warning=FALSE,message=FALSE,error=FALSE}
 
+#control
 ctrl8 <- trainControl(method = "cv", number = 5,
                      classProbs = TRUE,
                      summaryFunction = twoClassSummary)
 
+#train model specifying method to gbm to ensure 
+#use of generalized boosted regression method
 fit.cv.bin8 <- train(model.formula0, 
                data = diabetic.data, 
                trControl = ctrl8,
@@ -395,7 +399,6 @@ Variable importance: Report the 5 most important predictor categories.
 ```{r}
 
 caret::varImp(fit.cv.bin8, scale = FALSE)
-caret::varImp(fit.cv.bin8, scale = TRUE) # Scaled between 0 and 100
 
 ```
 
